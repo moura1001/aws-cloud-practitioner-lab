@@ -16,20 +16,20 @@ The goal of this project is to combine theoretical study with practical experien
 
 ## 🏗️ Labs
 
-| #  | Topic / Service               | Terraform | Status         |
-| -- | ----------------------------- | --------- | -------------- |
-| 01 | Cloud Concepts                | —         | 🟡 In progress |
-| 02 | IAM                           | ⬜         | ⬜ Not started  |
-| 03 | VPC                           | ⬜         | ⬜ Not started  |
-| 04 | EC2                           | ⬜         | ⬜ Not started  |
-| 05 | S3                            | ⬜         | ⬜ Not started  |
-| 06 | RDS                           | ⬜         | ⬜ Not started  |
-| 07 | ECR                           | ⬜         | ⬜ Not started  |
-| 08 | ECS / Fargate                 | ⬜         | ⬜ Not started  |
-| 09 | SQS                           | ⬜         | ⬜ Not started  |
-| 10 | CloudWatch                    | ⬜         | ⬜ Not started  |
-| 11 | Auto Scaling / Load Balancing | ⬜         | ⬜ Not started  |
-| 12 | Final Project                 | ⬜         | ⬜ Not started  |
+| #  | Lab / Topic                   | Hands-on  | Status |
+|----|-------------------------------|-----------|--------|
+| 01 | Cloud Concepts                | N/A       | ✅ Completed |
+| 02 | IAM                           | —         | ⬜ Not started |
+| 03 | VPC                           | —         | ⬜ Not started |
+| 04 | EC2                           | —         | ⬜ Not started |
+| 05 | S3                            | —         | ⬜ Not started |
+| 06 | RDS                           | —         | ⬜ Not started |
+| 07 | ECR                           | —         | ⬜ Not started |
+| 08 | ECS                           | —         | ⬜ Not started |
+| 09 | SQS                           | —         | ⬜ Not started |
+| 10 | CloudWatch                    | —         | ⬜ Not started |
+| 11 | Auto Scaling                  | —         | ⬜ Not started |
+| 12 | Final Project                 | —         | ⬜ Not started |
 
 ## 📚 Study Topics
 
