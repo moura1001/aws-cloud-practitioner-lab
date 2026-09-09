@@ -16,20 +16,21 @@ The goal of this project is to combine theoretical study with practical experien
 
 ## 🏗️ Labs
 
-| #  | Lab / Topic                   | Hands-on  | Status |
-|----|-------------------------------|-----------|--------|
-| 01 | Cloud Concepts                | N/A       | ✅ Completed |
-| 02 | IAM                           | —         | ⬜ Not started |
-| 03 | VPC                           | —         | ⬜ Not started |
-| 04 | EC2                           | —         | ⬜ Not started |
-| 05 | S3                            | —         | ⬜ Not started |
-| 06 | RDS                           | —         | ⬜ Not started |
-| 07 | ECR                           | —         | ⬜ Not started |
-| 08 | ECS                           | —         | ⬜ Not started |
-| 09 | SQS                           | —         | ⬜ Not started |
-| 10 | CloudWatch                    | —         | ⬜ Not started |
-| 11 | Auto Scaling                  | —         | ⬜ Not started |
-| 12 | Final Project                 | —         | ⬜ Not started |
+| #  | Lab / Topic                   | Hands-on | Status |
+|----|-------------------------------|----------|--------|
+| 01 | Cloud Concepts                | N/A      | ✅ Completed |
+| 02 | Global Infrastructure         | N/A      | ✅ Completed |
+| 03 | IAM                           | —        | ⬜ Not started |
+| 04 | VPC                           | —        | ⬜ Not started |
+| 05 | EC2                           | —        | ⬜ Not started |
+| 06 | S3                            | —        | ⬜ Not started |
+| 07 | RDS                           | —        | ⬜ Not started |
+| 08 | ECR                           | —        | ⬜ Not started |
+| 09 | ECS                           | —        | ⬜ Not started |
+| 10 | SQS                           | —        | ⬜ Not started |
+| 11 | CloudWatch                    | —        | ⬜ Not started |
+| 12 | Auto Scaling                  | —        | ⬜ Not started |
+| 13 | Final Project                 | —        | ⬜ Not started |
 
 ## 📚 Study Topics
 
@@ -81,24 +82,26 @@ Terraform state files and other sensitive or local files will be excluded throug
 
 ```text
 aws-cloud-practitioner-lab/
-│
+
 ├── 01-cloud-concepts/
-├── 02-iam/
-├── 03-vpc/
-├── 04-ec2/
-├── 05-s3/
-├── 06-rds/
-├── 07-ecr/
-├── 08-ecs/
-├── 09-sqs/
-├── 10-cloudwatch/
-├── 11-auto-scaling/
-├── 12-final-project/
+├── 02-global-infrastructure/
+├── 03-iam/
+├── 04-vpc/
+├── 05-ec2/
+├── 06-s3/
+├── 07-rds/
+├── 08-ecr/
+├── 09-ecs/
+├── 10-sqs/
+├── 11-cloudwatch/
+├── 12-auto-scaling/
+├── 13-final-project/
 │
 ├── docs/
 │   ├── architecture/
 │   ├── cost-control/
-│   └── notes/
+│   ├── notes/
+│   └── learning-log.md
 │
 └── README.md
 ```

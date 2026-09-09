@@ -202,4 +202,144 @@ Ao analisar uma arquitetura AWS, perguntar:
 * [x] Consolidar os conceitos do Day 01
 * [x] Registrar as anotações no `01-cloud-concepts/README.md`
 * [x] Fazer commit e push
-* [ ] Iniciar Day 02
+* [x] Iniciar Day 02
+
+# Day 02 — AWS Global Infrastructure & Well-Architected Framework
+
+**Status:** Concluído
+**Resultado:** Excelente domínio conceitual, com pequenos ajustes de terminologia.
+
+## Conceitos estudados
+
+* AWS Region
+* Availability Zone
+* Edge Location
+* AWS Global Infrastructure
+* AWS Well-Architected Framework
+* Operational Excellence
+* Security
+* Reliability
+* Performance Efficiency
+* Cost Optimization
+* Sustainability
+
+## Principais relações aprendidas
+
+```text
+Region
+    ↓
+Availability Zones
+    ↓
+Maior isolamento contra falhas
+    ↓
+Maior disponibilidade / resiliência
+```
+
+```text
+Edge Location
+    ↓
+CloudFront
+    ↓
+Conteúdo mais próximo do usuário
+    ↓
+Menor latência
+```
+
+```text
+Scalability
+    ↓
+Aumentar / diminuir capacidade
+
+Elasticity
+    ↓
+Ajustar dinamicamente conforme a demanda
+```
+
+## Relação entre os pilares
+
+```text
+Operational Excellence
+    → Como operar e melhorar?
+
+Security
+    → Como proteger?
+
+Reliability
+    → Como resistir e se recuperar de falhas?
+
+Performance Efficiency
+    → Como utilizar os recursos de forma eficiente?
+
+Cost Optimization
+    → Como evitar gastos desnecessários?
+
+Sustainability
+    → Como reduzir o impacto ambiental?
+```
+
+## Pontos que precisei corrigir
+
+### Region não é um país
+
+Region deve ser entendida como uma **área geográfica da AWS** que contém múltiplas Availability Zones.
+
+### Reliability é o nome do pilar
+
+Resiliência e tolerância a falhas são conceitos associados à Reliability, mas **não são nomes de pilares**.
+
+### Performance Efficiency
+
+O nome completo do pilar é **Performance Efficiency**, e não apenas "Performance".
+
+### Security não trata apenas de controle de acesso
+
+Security também envolve **auditoria, rastreabilidade, proteção de dados e identidade**.
+
+Exemplo:
+
+```text
+Quem pode fazer?
+    → Controle de acesso
+
+Quem fez?
+    → Auditoria / rastreabilidade
+```
+
+### Performance Efficiency × Reliability
+
+```text
+Sistema lento / recurso inadequado
+    → Performance Efficiency
+
+Sistema falhando / precisa se recuperar
+    → Reliability
+```
+
+## Autoavaliação
+
+**Resultado:** 9/10
+
+Consegui identificar corretamente os seis pilares nas situações apresentadas.
+
+Os principais ajustes foram relacionados à precisão da terminologia e à distinção entre conceitos próximos:
+
+* Reliability × Resilience;
+* Performance Efficiency × Reliability;
+* Security × controle de acesso/auditoria.
+
+## Regra prática
+
+Ao analisar uma questão do Well-Architected Framework:
+
+> **Primeiro identificar o problema que a arquitetura está tentando resolver; depois associá-lo ao pilar.**
+
+Não começar procurando uma tecnologia AWS específica.
+
+## Próximo passo
+
+* [x] Estudar Global Infrastructure
+* [x] Estudar Well-Architected Framework
+* [x] Responder às questões conceituais
+* [x] Registrar correções
+* [ ] Iniciar próximo módulo
+
