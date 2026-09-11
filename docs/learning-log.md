@@ -204,6 +204,8 @@ Ao analisar uma arquitetura AWS, perguntar:
 * [x] Fazer commit e push
 * [x] Iniciar Day 02
 
+---
+
 # Day 02 — AWS Global Infrastructure & Well-Architected Framework
 
 **Status:** Concluído
@@ -341,5 +343,97 @@ Não começar procurando uma tecnologia AWS específica.
 * [x] Estudar Well-Architected Framework
 * [x] Responder às questões conceituais
 * [x] Registrar correções
-* [ ] Iniciar próximo módulo
+* [x] Iniciar próximo módulo
 
+---
+
+## Day 3 — IAM
+
+### Conteúdos estudados
+
+* Authentication vs Authorization
+* IAM User
+* IAM Policy
+* Least Privilege
+* Root User
+* MFA
+* Access Keys
+* IAM Roles
+* Trust Policy
+* Permissions Policy
+* Credenciais temporárias
+* Integração entre AWS CLI, Terraform e IAM
+
+### Principais aprendizados
+
+**Authentication** responde à pergunta: **“Quem é você?”**
+
+**Authorization** responde à pergunta: **“O que você pode fazer?”**
+
+Um **IAM User** representa uma identidade persistente. Já uma **IAM Role** é uma identidade que pode ser assumida e normalmente fornece credenciais temporárias.
+
+Uma IAM Policy define quais ações uma identidade pode executar sobre determinados recursos.
+
+O princípio de **Least Privilege** consiste em conceder somente as permissões necessárias para realizar determinada tarefa.
+
+O **Root User** possui privilégios extremamente amplos e não deve ser utilizado para tarefas rotineiras. MFA deve estar habilitado e Access Keys do Root devem ser evitadas.
+
+### Hands-on realizado
+
+Foi criado o IAM User:
+
+`aws-cloud-practitioner-lab`
+
+O usuário inicialmente recebeu `AdministratorAccess` para permitir a configuração inicial do laboratório. Depois, essa permissão foi removida para demonstrar o princípio de Least Privilege.
+
+Foi criada uma política personalizada permitindo somente:
+
+```text
+sts:GetCallerIdentity
+```
+
+Com isso, o Terraform conseguiu consultar a identidade e a conta atual, mas não conseguiu executar operações que exigiam outras permissões.
+
+Um teste com `iam:GetUser` retornou `AccessDenied`, demonstrando na prática que uma identidade não pode executar uma ação que não esteja autorizada por sua policy.
+
+Também foi criada a Role:
+
+`aws-cloud-practitioner-lab-ec2-s3-read`
+
+A Role possui:
+
+* **Trust Policy:** permite que o serviço EC2 assuma a Role.
+* **Permissions Policy:** permite leitura no Amazon S3 através da `AmazonS3ReadOnlyAccess`.
+
+### Conceito importante sobre Roles
+
+Uma Role é especialmente útil para aplicações executadas em serviços AWS porque evita colocar Access Keys diretamente no código ou na configuração da aplicação.
+
+Quando uma EC2 assume uma Role, ela recebe **credenciais temporárias**, que possuem prazo de validade e são renovadas automaticamente. Isso reduz o risco associado ao vazamento de credenciais permanentes.
+
+### Terraform
+
+O Terraform foi utilizado para consultar:
+
+* Identidade AWS atual;
+* Account ID;
+* Região atual.
+
+Também foi utilizado para validar o comportamento das permissões do IAM.
+
+Nenhum recurso de infraestrutura com cobrança foi criado neste laboratório.
+
+### Resultado
+
+* [x] Compreendi Authentication vs Authorization
+* [x] Compreendi IAM User
+* [x] Compreendi IAM Policy
+* [x] Pratiquei Least Privilege
+* [x] Compreendi Root User e MFA
+* [x] Configurei AWS CLI
+* [x] Utilizei Terraform com IAM
+* [x] Testei uma permissão negada (`AccessDenied`)
+* [x] Compreendi IAM Roles
+* [x] Compreendi Trust Policy vs Permissions Policy
+* [x] Compreendi o uso de credenciais temporárias em Roles
+* [x] Nenhum recurso pago foi criado

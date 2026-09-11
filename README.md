@@ -20,7 +20,7 @@ The goal of this project is to combine theoretical study with practical experien
 |----|-------------------------------|----------|--------|
 | 01 | Cloud Concepts                | N/A      | ✅ Completed |
 | 02 | Global Infrastructure         | N/A      | ✅ Completed |
-| 03 | IAM                           | —        | ⬜ Not started |
+| 03 | IAM                           | Hands-on | ✅ Completed |
 | 04 | VPC                           | —        | ⬜ Not started |
 | 05 | EC2                           | —        | ⬜ Not started |
 | 06 | S3                            | —        | ⬜ Not started |
