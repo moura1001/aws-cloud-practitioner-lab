@@ -465,3 +465,165 @@ Mensagem recomendada:
 > 8. conclusão e indicação do próximo dia.
 >
 > Priorize segurança de custos, aprendizado real e explicações passo a passo.
+
+## 16. Estado atual das credenciais e IAM do laboratório
+
+### IAM User utilizado pelo laboratório
+
+O usuário IAM utilizado para executar comandos AWS CLI e Terraform é:
+
+```text
+aws-cloud-practitioner-lab
+```
+
+O Terraform utiliza as credenciais configuradas localmente no AWS CLI para esse usuário.
+
+Portanto, quando o Terraform executa uma operação como:
+
+```bash
+terraform apply
+```
+
+as permissões disponíveis são as permissões do usuário:
+
+```text
+aws-cloud-practitioner-lab
+```
+
+e **não** as permissões do Root User ou de qualquer outra identidade IAM.
+
+### Estado das permissões
+
+Durante o Day 3 — IAM, o usuário foi inicialmente configurado com:
+
+```text
+AdministratorAccess
+```
+
+Isso permitiu realizar a configuração inicial do laboratório.
+
+Posteriormente, `AdministratorAccess` foi removido para demonstrar o princípio de Least Privilege.
+
+Foi criada e mantida a policy personalizada:
+
+```text
+aws-cloud-practitioner-lab-read-identity
+```
+
+com a permissão:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "sts:GetCallerIdentity"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+Essa policy permite consultar a identidade atual, mas **não permite criar ou modificar recursos de infraestrutura**.
+
+Por exemplo, o usuário consegue executar consultas como:
+
+```bash
+aws sts get-caller-identity
+```
+
+e o Terraform consegue consultar a identidade e a região, mas uma tentativa de criar uma VPC resulta em `403 AccessDenied` porque o usuário não possui permissões como:
+
+```text
+ec2:CreateVpc
+ec2:CreateSubnet
+ec2:CreateRouteTable
+ec2:CreateInternetGateway
+...
+```
+
+### Regra para os próximos hands-on
+
+Antes de executar um `terraform apply` que crie ou modifique recursos AWS, verificar se o usuário utilizado pelo Terraform possui as permissões necessárias.
+
+Não assumir que o fato de o Terraform estar funcionando significa que ele possui permissões para criar qualquer recurso.
+
+O fluxo esperado deve ser:
+
+```text
+identificar recurso
+      ↓
+identificar permissões necessárias
+      ↓
+configurar Least Privilege
+      ↓
+terraform plan
+      ↓
+terraform apply
+      ↓
+testar
+      ↓
+documentar
+      ↓
+terraform destroy
+```
+
+Quando um novo módulo exigir permissões adicionais, devemos decidir conscientemente entre:
+
+1. criar/adicionar uma policy específica para o laboratório;
+2. utilizar permissões administrativas temporariamente, quando isso fizer sentido didático;
+3. remover/reduzir as permissões novamente após o exercício.
+
+A decisão deve ser explicada antes da execução.
+
+### AdministratorAccess
+
+`AdministratorAccess` pode ser utilizado temporariamente para determinados exercícios, mas não deve ser tratado como a configuração permanente do usuário do laboratório.
+
+Se for necessário reativá-lo para um exercício, registrar isso no aprendizado e, ao terminar, avaliar a remoção ou substituição pelas permissões mínimas necessárias.
+
+**Importante:** não executar `terraform apply` esperando que uma policy de apenas `sts:GetCallerIdentity` consiga criar recursos como VPC, EC2, S3, RDS etc.
+
+### IAM Role criada no Day 3
+
+Também existe a Role:
+
+```text
+aws-cloud-practitioner-lab-ec2-s3-read
+```
+
+Essa Role possui:
+
+```text
+Trust Policy:
+EC2 → pode assumir a Role
+
+Permissions Policy:
+AmazonS3ReadOnlyAccess
+```
+
+Essa Role **não concede permissões ao usuário `aws-cloud-practitioner-lab`**.
+
+Ela será utilizada posteriormente no módulo de EC2 para demonstrar o uso de credenciais temporárias:
+
+```text
+EC2
+ ↓
+assume Role
+ ↓
+credenciais temporárias
+ ↓
+permissões da Role
+ ↓
+S3
+```
+
+### Regra de segurança
+
+Nunca colocar Access Key ou Secret Access Key diretamente no Terraform, código ou Git.
+
+O Terraform deve continuar utilizando as credenciais configuradas pelo AWS CLI/ambiente local.
+
