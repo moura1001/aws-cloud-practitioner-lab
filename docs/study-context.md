@@ -627,3 +627,82 @@ Nunca colocar Access Key ou Secret Access Key diretamente no Terraform, código 
 
 O Terraform deve continuar utilizando as credenciais configuradas pelo AWS CLI/ambiente local.
 
+## 17. Padrão de commits e histórico do projeto
+
+### Padrão de mensagens
+
+Os commits devem utilizar o padrão:
+
+```text
+tipo: descrição curta em inglês
+```
+
+Tipos utilizados até o momento:
+
+* `docs:` → documentação, anotações, atualização de status e learning log;
+* `feat:` → implementação de novos recursos ou infraestrutura do laboratório.
+
+Exemplos:
+
+```text
+docs: complete iam study and lab
+feat: add iam terraform lab
+docs: add study context and methodology
+docs: update AWS lab IAM context
+```
+
+As mensagens devem ser:
+
+* curtas;
+* objetivas;
+* em inglês;
+* iniciadas por um tipo semântico (`docs:`, `feat:`, etc.);
+* descrever claramente o que foi alterado.
+
+Não é necessário incluir o número do Day na mensagem quando a descrição já deixa clara a alteração.
+
+### Histórico atual
+
+```text
+e47533e (HEAD -> main) docs: update AWS lab IAM context
+59f8c18 docs: add study context and methodology
+557aa06 (origin/main, origin/HEAD) docs: complete iam study and lab
+5beb710 feat: add iam terraform lab
+6016ae0 docs: complete global infrastructure study
+037e808 docs: mark cloud concepts as completed
+f9266f4 docs: add cloud concepts study notes
+c9f6694 docs: update project README
+0907a44 Initial commit
+```
+
+### Estado atual do Git
+
+O branch local `main` está atualmente à frente de `origin/main` pelos commits:
+
+```text
+e47533e docs: update AWS lab IAM context
+59f8c18 docs: add study context and methodology
+```
+
+Antes de iniciar um novo commit, sempre verificar:
+
+```bash
+git status
+git log --oneline --decorate -n 10
+```
+
+Evitar commits duplicados quando uma alteração já tiver sido registrada.
+
+Após concluir um módulo, o fluxo esperado é:
+
+```text
+git status
+      ↓
+revisar alterações
+      ↓
+git add
+      ↓
+git commit -m "tipo: descrição"
+      ↓
+git push
+```
