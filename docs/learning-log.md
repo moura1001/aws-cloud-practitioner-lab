@@ -631,3 +631,262 @@ A estratégia de segurança financeira continua sendo:
 
 **Day 4 — VPC: concluído.**
 
+---
+
+# Day 5 — EC2
+
+**Status:** Concluído
+
+**Resultado:** Bom domínio dos conceitos fundamentais de EC2, com correções principalmente relacionadas a AMI, EBS, Security Group x IAM e ciclo de vida da instância.
+
+## Conceitos estudados
+
+* EC2
+* AMI
+* Instance Type
+* EBS
+* Instance Store
+* Security Group
+* IP privado e IP público
+* Public Subnet
+* Internet Gateway
+* IAM Role
+* Instance Profile
+* Stop x Start
+* Stop x Terminate
+* `DeleteOnTermination`
+* Terraform State
+* `terraform apply -refresh-only`
+* Least Privilege
+
+## Principais aprendizados
+
+### 1. EC2
+
+EC2 fornece capacidade computacional sob demanda.
+
+Uma instância pode ser configurada com diferentes sistemas operacionais, recursos computacionais, armazenamento e configurações de rede.
+
+```text
+EC2
+ ├── Compute
+ ├── Storage
+ ├── Network
+ └── IAM Role
+```
+
+### 2. AMI x Instance Type
+
+```text
+AMI
+→ imagem/template utilizada para lançar a EC2
+
+Instance Type
+→ características computacionais da EC2
+```
+
+A AMI não é simplesmente o sistema operacional; ela é a imagem utilizada para criar a instância e pode incluir software e configurações.
+
+### 3. EBS
+
+EBS é armazenamento em bloco persistente utilizado pela EC2.
+
+No laboratório foi utilizado:
+
+```text
+gp3
+2 GiB
+/dev/xvda
+```
+
+O volume raiz possuía:
+
+```text
+delete_on_termination = true
+```
+
+e foi excluído automaticamente quando a EC2 foi terminada.
+
+### 4. Security Group x IAM
+
+```text
+Security Group
+→ controle de tráfego de rede
+
+IAM
+→ controle de permissões AWS
+```
+
+Security Group não é um subconjunto do IAM.
+
+Regra prática:
+
+```text
+SG → "Pode passar esse tráfego?"
+
+IAM → "Essa identidade pode executar essa ação?"
+```
+
+### 5. IAM Role em EC2
+
+A EC2 utilizou a Role criada no Day 3:
+
+```text
+aws-cloud-practitioner-lab-ec2-s3-read
+```
+
+através de um Instance Profile.
+
+```text
+EC2
+ ↓
+Instance Profile
+ ↓
+IAM Role
+ ↓
+credenciais temporárias
+```
+
+Isso evita a necessidade de armazenar Access Keys permanentes na instância.
+
+## Hands-on realizado
+
+Foi criada uma EC2 utilizando Terraform:
+
+```text
+Instance Type: t3.nano
+AMI: Amazon Linux 2023 Minimal
+AZ: sa-east-1a
+Subnet: public-a
+EBS: gp3 / 2 GiB
+```
+
+Foi criado um Security Group sem regras de entrada e configurado um Instance Profile utilizando a IAM Role existente.
+
+Foram realizados experimentos de:
+
+* Stop/Start;
+* observação de IP privado e público;
+* consulta do EBS;
+* Terminate;
+* exclusão automática do EBS;
+* sincronização do Terraform State;
+* Terraform Destroy.
+
+## Resultado dos experimentos
+
+Durante Stop/Start:
+
+```text
+Private IP → permaneceu 10.0.1.188
+Public IP → foi liberado e recebeu novo endereço após Start
+```
+
+Durante Terminate:
+
+```text
+EC2 → terminated
+EBS → excluído
+```
+
+A exclusão do EBS ocorreu devido a:
+
+```text
+delete_on_termination = true
+```
+
+## Terraform State
+
+Após terminar a EC2 diretamente pela AWS CLI, o Terraform inicialmente ainda possuía a instância no state.
+
+Foi utilizado:
+
+```bash
+terraform apply -refresh-only
+```
+
+para sincronizar o state com a infraestrutura real sem modificar recursos AWS.
+
+Isso demonstrou a diferença entre:
+
+```text
+Terraform State
+        ×
+Infraestrutura real
+```
+
+## Least Privilege
+
+Durante o `terraform destroy`, algumas operações IAM falharam inicialmente porque a policy do usuário não possuía:
+
+```text
+iam:DetachUserPolicy
+iam:RemoveRoleFromInstanceProfile
+```
+
+Essas permissões foram adicionadas para permitir o cleanup.
+
+Não foi adicionada:
+
+```text
+iam:DeletePolicy
+```
+
+para evitar conceder ao usuário a capacidade de excluir a própria policy do laboratório.
+
+O problema demonstrou na prática que:
+
+> As permissões necessárias para criar um recurso não são necessariamente as mesmas necessárias para removê-lo.
+
+## Pegadinhas importantes para a CLF-C02
+
+* AMI é uma imagem/template, não apenas um sistema operacional.
+* Instance Type define recursos computacionais.
+* EBS é armazenamento persistente em bloco.
+* Instance Store é armazenamento temporário/efêmero.
+* Security Group controla tráfego de rede.
+* IAM controla permissões AWS.
+* Subnet pública não significa que toda EC2 terá IP público.
+* Stop permite iniciar a instância novamente.
+* Terminate encerra a instância definitivamente.
+* O comportamento do EBS após Terminate depende de `DeleteOnTermination`.
+* IAM Role fornece credenciais temporárias e é preferível a Access Keys permanentes para workloads AWS.
+* Uma EC2 acessível por SSH precisa de mais do que apenas uma rota para o Internet Gateway.
+
+## Controle de custos
+
+Foram evitados recursos desnecessários como:
+
+* NAT Gateway;
+* Elastic IP;
+* infraestrutura adicional;
+* regras de acesso SSH abertas.
+
+A instância utilizou `t3.nano` e um EBS de apenas `2 GiB`.
+
+Ao final, os recursos temporários do laboratório foram destruídos.
+
+## Checklist
+
+* [x] Estudar EC2
+* [x] Estudar AMI
+* [x] Estudar Instance Type
+* [x] Estudar EBS
+* [x] Estudar Security Group
+* [x] Estudar IP público e privado
+* [x] Utilizar IAM Role em EC2
+* [x] Criar EC2 com Terraform
+* [x] Testar Stop/Start
+* [x] Observar alteração do IP público
+* [x] Testar Terminate
+* [x] Validar `DeleteOnTermination`
+* [x] Praticar `terraform apply -refresh-only`
+* [x] Praticar `terraform destroy`
+* [x] Consolidar conceitos da CLF-C02
+* [x] Limpar os recursos temporários
+
+---
+
+## Próximo módulo
+
+**Day 6 — S3**
