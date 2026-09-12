@@ -31,7 +31,7 @@ Antes da explicação completa, foram utilizadas perguntas para identificar o co
 
 ### Minha resposta:
 
-> VPC é uma forma de isolar as aplicações de outras contas e da Internet em geral, sendo pública somente quando explicitamente exposta.
+> É uma forma de isolar aplicações de outras entre as contas da AWS e a Internet em geral, só ficando públicas se explicitamente expostas
 
 ### Correção:
 
@@ -59,7 +59,7 @@ A VPC também não é "pública" ou "privada" por si só. Dentro dela podemos cr
 
 ### Minha resposta:
 
-> Não sabia responder.
+> Não sei, não lembro desse conteúdo sobre máscaras de rede
 
 ### Correção:
 
@@ -101,7 +101,7 @@ e dividimos esse espaço em subnets `/24`.
 
 ### Minha resposta:
 
-> Acredito que tenha relação com a possibilidade de acesso à Internet.
+> Não sei, mas acredito que é algo relacionado a está acessível pela Internet ou não
 
 ### Correção:
 
@@ -149,7 +149,7 @@ Uma subnet privada ainda pode possuir acesso de saída à Internet por meio de u
 
 ### Minha resposta:
 
-> Lembro de ALB e Route Tables.
+> Na aplicação que estou trabalhando existe um ALB, e também sei que precisa de algo relacionado a Route Tables
 
 ### Correção:
 
@@ -184,9 +184,19 @@ Já uma EC2 em subnet privada não possui esse caminho direto.
 
 ## 2.5 Uma VPC pode abranger múltiplas Availability Zones?
 
+Qual destas afirmações você considera correta?
+
+A) Uma VPC pertence a uma Availability Zone.
+
+B) Uma VPC pode abranger várias Availability Zones dentro de uma Region.
+
+C) Uma Subnet pode abranger várias Regions.
+
+D) Uma Availability Zone pode pertencer a várias Regions.
+
 ### Minha resposta:
 
-> B
+> Acredito que a afirmação correta é a B pois as aplicações resilientes tem que saber se comunicar entre as diferentes AZs
 
 ### Correção:
 
@@ -222,9 +232,21 @@ Region
 
 ## 2.6 Para servidores de aplicação que não devem ficar diretamente expostos à Internet, qual subnet seria mais adequada?
 
+Uma empresa possui servidores de aplicação que não devem ser acessíveis diretamente pela Internet, mas precisam acessar serviços externos, como APIs públicas.
+
+Você colocaria esses servidores em:
+
+A) Subnet pública
+
+B) Subnet privada
+
+C) Edge Location
+
+D) Availability Zone sem VPC
+
 ### Minha resposta:
 
-> Private subnet. E acredito que as Route Tables tenham relação com as regras de acesso de saída.
+> Os servidores deveriam está numa Subnet privada, provavelmente com regras de saída permitidas mas de entrada não, provavelmente sendo configuradas através de Route Tables
 
 ### Correção:
 
@@ -795,7 +817,7 @@ Após a prática, as seguintes questões foram respondidas:
 
 ### Minha resposta:
 
-> Primeiro que uma subnet só pode está vinculada a uma única AZ e segundo porque isso é uma das configurações necessárias caso se esteja querendo ter alta resiliência na aplicação que precisa se comunicar com a Internet.
+> Primeiro que uma subnet só pode está vinculada a uma única AZ e segundo porque isso é uma das configurações necessárias caso se esteja querendo ter alta resiliência na aplicação que precisa se comunicar com a Internet
 
 ### Correção:
 
@@ -813,7 +835,7 @@ A comunicação com a Internet não é, por si só, o motivo da alta disponibili
 
 ### Minha resposta:
 
-> Uma subnet é pública quando ela tem uma rota de acesso para Internet Gateway (IGW).
+> Uma subnet é pública quando ela tem uma rota de acesso para Internet Gateway (IGW)
 
 ### Correção:
 
@@ -835,7 +857,7 @@ Internet Gateway
 
 ### Minha resposta:
 
-> A subnet privada private-a não tem uma rota de acesso vinculada ao IGW.
+> A subnet privada private-a não tem uma rota de acesso vinculada ao IGW
 
 ### Correção:
 
@@ -851,7 +873,7 @@ Caso fosse necessário acesso de saída à Internet, poderíamos utilizar um NAT
 
 ### Minha resposta:
 
-> Aparentemente sim mas provavelmente não porque também pode ter bloqueios de security group, firewall, etc.
+> Aparentemente sim mas provavelmente não porque também pode ter bloqueios de security group, firewall, etc
 
 ### Correção:
 
@@ -882,7 +904,7 @@ EC2 automaticamente acessível
 
 ### Minha resposta:
 
-> Esse é um recurso pago da AWS e não era necessário para fixar os conceitos realmente importantes do laboratório prático.
+> Esse é um recurso pago da AWS e não era necessário para fixar os conceitos realmente importantes do laboratório prático
 
 ### Correção:
 
