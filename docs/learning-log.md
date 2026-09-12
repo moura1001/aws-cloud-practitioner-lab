@@ -437,3 +437,197 @@ Nenhum recurso de infraestrutura com cobrança foi criado neste laboratório.
 * [x] Compreendi Trust Policy vs Permissions Policy
 * [x] Compreendi o uso de credenciais temporárias em Roles
 * [x] Nenhum recurso pago foi criado
+
+---
+
+## Day 4 — VPC
+
+### Objetivos
+
+* Entender o conceito de VPC e CIDR.
+* Diferenciar VPC, Subnet pública e Subnet privada.
+* Entender como Route Tables e Internet Gateway controlam o tráfego.
+* Criar uma VPC utilizando Terraform.
+* Praticar Least Privilege utilizando uma política IAM específica para o laboratório.
+* Validar que o laboratório funciona sem `AdministratorAccess`.
+
+### Conceitos estudados
+
+**VPC (Virtual Private Cloud)** é uma rede virtual logicamente isolada dentro da AWS, na qual podemos definir a organização e as regras de comunicação dos recursos.
+
+Uma VPC pode abranger múltiplas Availability Zones, enquanto uma Subnet pertence a uma única Availability Zone.
+
+**CIDR** define o intervalo de endereços IP da rede. Por exemplo:
+
+* `10.0.0.0/16` → espaço de endereços maior.
+* `10.0.1.0/24` → espaço de endereços menor.
+
+**Subnet pública** possui uma Route Table com uma rota para um Internet Gateway.
+
+**Subnet privada** não possui uma rota direta para um Internet Gateway. Ela pode utilizar outros componentes, como NAT Gateway, para permitir acesso de saída à Internet sem exposição direta para conexões de entrada.
+
+**Route Table** define para onde o tráfego deve ser encaminhado.
+
+**Internet Gateway (IGW)** permite a comunicação entre a VPC e a Internet quando existem as configurações de rota e endereço necessárias.
+
+Ter uma VPC, Internet Gateway ou subnet pública não significa, por si só, que um recurso esteja automaticamente acessível pela Internet.
+
+**Security Group** funciona como um firewall virtual associado aos recursos e controla o tráfego permitido.
+
+### Infraestrutura criada
+
+Foi criada uma VPC com:
+
+* CIDR `10.0.0.0/16`
+* DNS Support habilitado
+* DNS Hostnames habilitado
+* Região `sa-east-1`
+* Tag `aws-cloud-practitioner-lab-vpc`
+
+A VPC foi dividida entre duas Availability Zones:
+
+```text
+VPC 10.0.0.0/16
+│
+├── sa-east-1a
+│   ├── public-a  → 10.0.1.0/24
+│   └── private-a → 10.0.11.0/24
+│
+└── sa-east-1b
+    ├── public-b  → 10.0.2.0/24
+    └── private-b → 10.0.12.0/24
+```
+
+Também foram criados:
+
+* 1 Internet Gateway
+* 1 Route Table pública
+* 1 Route Table privada
+* 1 rota `0.0.0.0/0 → Internet Gateway`
+* associações das duas subnets públicas à Route Table pública
+* associações das duas subnets privadas à Route Table privada
+
+A configuração foi validada utilizando tanto Terraform quanto AWS CLI.
+
+### Public vs Private Subnet
+
+Uma subnet é considerada pública quando sua Route Table possui uma rota para um Internet Gateway.
+
+No laboratório:
+
+```text
+Public Route Table
+└── 0.0.0.0/0 → Internet Gateway
+```
+
+A Route Table privada não possui essa rota, portanto as subnets privadas não possuem acesso direto à Internet através do IGW.
+
+Uma subnet pública também não torna automaticamente todos os recursos acessíveis pela Internet. Para uma EC2 ser acessível externamente, ainda são necessários fatores como endereço IP público e regras apropriadas no Security Group.
+
+### Alta disponibilidade
+
+As subnets públicas e privadas foram distribuídas entre `sa-east-1a` e `sa-east-1b`.
+
+Isso reforça o conceito de alta disponibilidade e resiliência: uma subnet pertence a uma única AZ, portanto recursos que precisam de maior disponibilidade podem ser distribuídos entre diferentes AZs.
+
+### NAT Gateway
+
+Não foi criado NAT Gateway.
+
+O NAT Gateway permite que recursos em subnets privadas iniciem conexões com a Internet sem que esses recursos precisem ser diretamente expostos à Internet.
+
+Entretanto, ele possui custo e não era necessário para os objetivos deste laboratório. Por isso, foi deliberadamente omitido para manter o exercício simples e evitar custos desnecessários.
+
+### Least Privilege na prática
+
+Inicialmente, o usuário `aws-cloud-practitioner-lab` possuía `AdministratorAccess` para permitir a execução dos laboratórios.
+
+Para praticar Least Privilege, foi criada a política gerenciada:
+
+`aws-cloud-practitioner-lab-vpc`
+
+Ao remover `AdministratorAccess`, o Terraform revelou progressivamente permissões necessárias que não estavam inicialmente previstas.
+
+Entre as permissões identificadas durante os testes estavam:
+
+* `ec2:DescribeVpcAttribute`
+* `ec2:DescribeAvailabilityZones`
+* `ec2:CreateTags`
+* `ec2:DescribeNetworkInterfaces`
+* `ec2:ModifySubnetAttribute`
+* `iam:GetPolicy`
+* `iam:GetPolicyVersion`
+* `iam:ListAttachedUserPolicies`
+
+Após os ajustes, o comando:
+
+```bash
+terraform plan
+```
+
+funcionou corretamente sem `AdministratorAccess`.
+
+O processo demonstrou na prática que ferramentas de infraestrutura como Terraform não precisam apenas das permissões de criação dos recursos. Elas também precisam consultar o estado atual dos recursos e das políticas durante operações como `refresh` e `plan`.
+
+### Validação
+
+A infraestrutura foi validada por meio de:
+
+```bash
+terraform validate
+terraform plan
+terraform apply
+```
+
+Também foram utilizados comandos da AWS CLI para confirmar:
+
+* Availability Zones disponíveis
+* subnets criadas
+* CIDRs
+* Availability Zones das subnets
+* configuração de IP público
+* Route Tables
+* rotas configuradas
+
+O `terraform plan` final foi executado com sucesso sem `AdministratorAccess`.
+
+### Estado final do IAM
+
+O usuário `aws-cloud-practitioner-lab` possui:
+
+* `aws-cloud-practitioner-lab-read-identity`
+* `aws-cloud-practitioner-lab-vpc`
+
+O `AdministratorAccess` foi removido após a validação da política de Least Privilege.
+
+### Custo
+
+Não foi criado NAT Gateway, EC2 ou outro recurso que gere custo relevante neste laboratório.
+
+A infraestrutura atual consiste principalmente em componentes de rede da VPC utilizados para fins educacionais.
+
+A estratégia de segurança financeira continua sendo:
+
+**entender → criar → testar → observar → documentar → destruir**
+
+### Principais aprendizados do Day 4
+
+* Uma VPC é uma rede virtual logicamente isolada na AWS.
+* Uma VPC pode abranger várias Availability Zones.
+* Uma subnet pertence a uma única Availability Zone.
+* CIDR `/16` representa um espaço de endereços maior que `/24`.
+* Uma subnet pública possui rota para um Internet Gateway.
+* Uma subnet privada não possui rota direta para um Internet Gateway.
+* Route Tables determinam os caminhos do tráfego.
+* Internet Gateway fornece conectividade entre a VPC e a Internet.
+* NAT Gateway pode fornecer acesso de saída à Internet para subnets privadas, mas possui custo.
+* Uma subnet pública não torna automaticamente uma EC2 acessível pela Internet.
+* Security Groups controlam o tráfego permitido para os recursos.
+* Distribuir recursos entre AZs aumenta a resiliência da arquitetura.
+* Terraform pode exigir permissões de leitura e gerenciamento além das ações diretamente relacionadas ao recurso.
+* Least Privilege deve ser validado na prática, utilizando somente as permissões necessárias.
+
+### Status
+
+**Day 4 — VPC: concluído.**
+
