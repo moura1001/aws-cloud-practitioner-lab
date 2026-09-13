@@ -887,6 +887,199 @@ Ao final, os recursos temporários do laboratório foram destruídos.
 
 ---
 
-## Próximo módulo
+## Day 6 — S3 (Simple Storage Service)
 
-**Day 6 — S3**
+### Objetivo
+
+Estudar o Amazon S3 como serviço de Object Storage e praticar criação, configuração, acesso, versionamento e cleanup utilizando Terraform e AWS CLI.
+
+### Conceitos estudados
+
+* S3 como Object Storage;
+* Bucket e Object;
+* Object Key;
+* Bucket names globalmente únicos;
+* S3 × EBS × EFS;
+* Storage Classes;
+* Versioning;
+* Delete Marker;
+* IAM Policy para S3;
+* Bucket permissions × Object permissions;
+* Block Public Access;
+* Least Privilege.
+
+### Principais conceitos
+
+**S3 → Object Storage**
+
+```text
+S3  → Object
+EBS → Block
+EFS → File
+```
+
+Bucket é o recipiente dos objetos e Object é o dado armazenado.
+
+O S3 não é um banco de dados NoSQL e não utiliza diretórios tradicionais. Caminhos como `documentos/arquivo.pdf` são representados pela Key do objeto.
+
+### Storage Classes
+
+Storage Class define a categoria de armazenamento utilizada pelo objeto, considerando fatores como frequência de acesso e custo.
+
+Exemplos estudados:
+
+* S3 Standard;
+* S3 Standard-IA;
+* S3 Glacier.
+
+### Versioning
+
+Com Versioning desabilitado, enviar um objeto utilizando a mesma Key substitui o objeto atual.
+
+Com Versioning habilitado, o S3 mantém múltiplas versões:
+
+```text
+example.txt
+├── Version A
+└── Version B
+```
+
+Também foi observado que um objeto criado antes da ativação do Versioning pode aparecer com:
+
+```text
+VersionId: null
+```
+
+### Delete Marker
+
+Com Versioning habilitado, excluir um objeto cria normalmente um Delete Marker.
+
+As versões anteriores continuam disponíveis:
+
+```text
+example.txt
+├── Delete Marker
+├── Version B
+└── Version A
+```
+
+Foi possível recuperar uma versão anterior utilizando seu `VersionId`.
+
+### IAM
+
+Foi criada a policy:
+
+```text
+aws-cloud-practitioner-lab-s3
+```
+
+e anexada ao usuário:
+
+```text
+aws-cloud-practitioner-lab
+```
+
+As permissões foram separadas entre operações de bucket e objetos, aplicando Least Privilege.
+
+Principais ações:
+
+```text
+s3:DeleteBucket
+s3:ListBucket
+s3:GetBucketVersioning
+s3:PutBucketVersioning
+s3:GetBucketPublicAccessBlock
+s3:PutBucketPublicAccessBlock
+s3:GetBucketTagging
+s3:PutBucketTagging
+s3:GetBucketPolicy
+s3:GetBucketAcl
+s3:GetBucketCORS
+s3:GetBucketWebsite
+s3:GetAccelerateConfiguration
+s3:GetBucketRequestPayment
+s3:GetBucketLogging
+s3:GetLifecycleConfiguration
+s3:GetReplicationConfiguration
+s3:GetEncryptionConfiguration
+s3:GetBucketObjectLockConfiguration
+s3:ListBucketVersions
+
+s3:GetObject
+s3:PutObject
+s3:DeleteObject
+s3:DeleteObjectVersion
+s3:GetObjectVersion
+```
+
+### Hands-on
+
+Foi criado um bucket S3 via Terraform utilizando um nome baseado no Account ID:
+
+```text
+aws-cloud-practitioner-lab-s3-<account-id>
+```
+
+Também foi configurado Block Public Access.
+
+A AWS CLI foi utilizada para:
+
+```text
+upload
+download
+list
+delete
+list-object-versions
+get-object
+```
+
+Foram realizados experimentos de sobrescrita, Versioning e Delete Marker.
+
+### Terraform
+
+O bucket foi configurado com:
+
+```hcl
+force_destroy = true
+```
+
+para permitir o cleanup automático de objetos e versões durante o `terraform destroy`.
+
+### Cleanup
+
+O laboratório foi destruído com sucesso utilizando:
+
+```bash
+terraform destroy
+```
+
+O bucket, suas versões e demais recursos do laboratório foram removidos.
+
+### Aprendizados / correções das respostas
+
+Inicialmente houve confusão entre S3 e banco de dados NoSQL e entre Object Storage e File Storage.
+
+Após o laboratório, os conceitos foram consolidados:
+
+```text
+S3  → Object Storage
+EBS → Block Storage
+EFS → File Storage
+```
+
+Também foi consolidada a diferença entre:
+
+```text
+Bucket → recipiente
+Object → dado armazenado
+Key    → identificador do objeto
+VersionId → identificador de uma versão
+```
+
+O experimento de Versioning demonstrou na prática que excluir um objeto não necessariamente remove suas versões anteriores.
+
+### Resultado
+
+**Day 6 — S3: Completed**
+
+---
