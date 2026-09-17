@@ -4,7 +4,7 @@
 
 Este repositório é um laboratório prático criado para estudar e consolidar os conhecimentos necessários para a certificação **AWS Certified Cloud Practitioner (CLF-C02)**.
 
-O objetivo não é apenas decorar conceitos para a prova. O estudo deve combinar:
+O objetivo não é apenas decorar conceitos para a prova. O estudo combina:
 
 * fundamentos de Cloud Computing;
 * conceitos da AWS;
@@ -25,6 +25,7 @@ O laboratório também deve servir como um projeto profissional para portfólio 
 
 ```text
 aws-cloud-practitioner-lab/
+
 ├── 01-cloud-concepts/
 ├── 02-global-infrastructure/
 ├── 03-iam/
@@ -56,18 +57,18 @@ aws-cloud-practitioner-lab/
 | 01 | Cloud Concepts        | N/A      | ✅ Completed   |
 | 02 | Global Infrastructure | N/A      | ✅ Completed   |
 | 03 | IAM                   | Hands-on | ✅ Completed   |
-| 04 | VPC                   | —        | ⬜ Not started |
-| 05 | EC2                   | —        | ⬜ Not started |
-| 06 | S3                    | —        | ⬜ Not started |
-| 07 | RDS                   | —        | ⬜ Not started |
-| 08 | ECR                   | —        | ⬜ Not started |
-| 09 | ECS                   | —        | ⬜ Not started |
-| 10 | SQS                   | —        | ⬜ Not started |
-| 11 | CloudWatch            | —        | ⬜ Not started |
-| 12 | Auto Scaling          | —        | ⬜ Not started |
-| 13 | Final Project         | —        | ⬜ Not started |
+| 04 | VPC                   | Hands-on | ✅ Completed   |
+| 05 | EC2                   | Hands-on | ✅ Completed   |
+| 06 | S3                    | Hands-on | ✅ Completed   |
+| 07 | RDS                   | Hands-on | ✅ Completed   |
+| 08 | ECR                   | Hands-on | ⬜ Not started |
+| 09 | ECS                   | Hands-on | ⬜ Not started |
+| 10 | SQS                   | Hands-on | ⬜ Not started |
+| 11 | CloudWatch            | Hands-on | ⬜ Not started |
+| 12 | Auto Scaling          | Hands-on | ⬜ Not started |
+| 13 | Final Project         | Hands-on | ⬜ Not started |
 
-O próximo módulo a ser iniciado é **Day 4 — VPC**.
+**Próximo módulo: Day 8 — ECR.**
 
 ---
 
@@ -86,7 +87,7 @@ Objetivos:
 * identificar conceitos que precisam de maior atenção;
 * aproximar o estudo do formato da prova CLF-C02.
 
-As perguntas devem ser respondidas pelo aluno antes de receber a explicação completa.
+As perguntas devem ser respondidas pelo aluno antes da explicação completa.
 
 Depois das respostas:
 
@@ -131,8 +132,6 @@ entender → criar → testar → observar → documentar → destruir
 
 O aluno deve entender o motivo de cada comando e recurso criado.
 
-Não assumir que o aluno quer apenas copiar comandos.
-
 Antes de criar recursos que possam gerar cobrança, explicar:
 
 * se existe custo;
@@ -165,10 +164,6 @@ create → test → document → destroy
 
 Quando um recurso precisar permanecer para um módulo futuro, explicar explicitamente por quê.
 
-Exemplo:
-
-A IAM Role criada no Day 3 deve permanecer porque será reutilizada no laboratório de EC2.
-
 ---
 
 ## 6. Terraform
@@ -184,7 +179,68 @@ Princípios:
 * nunca colocar Access Key ou Secret Access Key no repositório;
 * manter `.terraform/`, `terraform.tfstate` e arquivos de variáveis sensíveis fora do Git.
 
-O aluno utiliza AWS CLI configurado localmente para autenticação.
+O aluno utiliza AWS CLI localmente para autenticação.
+
+Os módulos devem evitar hardcode de IDs de infraestrutura existente quando for possível descobrir os recursos através de tags ou outros mecanismos do Terraform.
+
+## Metodologia obrigatória de cada módulo
+
+Cada módulo de estudo deve seguir a mesma sequência:
+
+1. **Diagnóstico inicial**
+
+   * Antes de qualquer explicação, apresentar perguntas de diagnóstico.
+   * O usuário responde sem pesquisar, mesmo que não tenha certeza.
+   * Não corrigir ou explicar antes de receber as respostas.
+
+2. **Correção do diagnóstico**
+
+   * Reproduzir a resposta original do usuário utilizando o formato:
+     **Minha resposta:**
+   * Avaliar cada resposta individualmente.
+   * Indicar o que estava correto, parcialmente correto ou incorreto.
+   * Explicar a correção e destacar possíveis pegadinhas da CLF-C02.
+   * Não substituir a resposta original por uma resposta "melhorada".
+
+3. **Explicação**
+
+   * Somente depois do diagnóstico e das correções, explicar os conceitos do módulo.
+   * Relacionar os conceitos novos com módulos anteriores quando houver conexão relevante.
+   * Priorizar o entendimento do "por quê" antes dos comandos.
+
+4. **Hands-on**
+
+   * Seguir o fluxo:
+     **entender → criar → testar → observar → documentar → destruir**
+   * Utilizar Terraform quando fizer sentido para o laboratório.
+   * Aplicar least privilege nas permissões IAM.
+   * Considerar custos antes da criação de recursos potencialmente cobrados.
+
+5. **Documentação**
+
+   * Cada módulo deve possuir seu próprio `README.md`.
+   * O README deve registrar:
+
+     * objetivo;
+     * diagnóstico completo;
+     * respostas originais do usuário;
+     * correções;
+     * conceitos estudados;
+     * arquitetura;
+     * implementação;
+     * validação;
+     * controle de custos;
+     * pontos de atenção para CLF-C02;
+     * conclusão/status.
+   * `docs/learning-log.md` deve receber um resumo conciso do módulo, sem simplesmente copiar o README.
+   * `docs/study-context.md` deve registrar o estado atual do curso e informações necessárias para continuar em outro chat.
+
+6. **Continuidade entre chats**
+
+   * Antes de iniciar um novo módulo, utilizar `docs/study-context.md` e `docs/learning-log.md` como fonte de contexto.
+   * Não inferir informações que não estejam nesses arquivos ou no contexto atual.
+   * Se houver dúvida sobre como um módulo anterior foi conduzido, **perguntar antes de prosseguir**.
+   * Preservar as respostas originais do usuário nos READMEs dos módulos.
 
 ---
 
@@ -199,17 +255,7 @@ Nunca solicitar ao aluno:
 * credenciais;
 * dados sensíveis.
 
-Quando for necessário mostrar uma saída que contenha informações sensíveis, utilizar placeholders como:
-
-```text
-ACCOUNT_ID
-```
-
-ou:
-
-```text
-<ACCOUNT_ID>
-```
+Quando for necessário mostrar uma saída que contenha informações sensíveis, utilizar placeholders.
 
 ---
 
@@ -269,16 +315,25 @@ Após concluir um módulo:
 4. fazer commit com mensagem clara;
 5. enviar para o GitHub.
 
-Exemplos:
+Padrão:
+
+```text
+tipo: descrição curta em inglês
+```
+
+Tipos utilizados:
+
+* `docs:` → documentação, anotações, atualização de status e learning log;
+* `feat:` → implementação de novos recursos ou infraestrutura do laboratório.
+
+Não criar commits duplicados sem necessidade.
+
+Antes de novos commits:
 
 ```bash
 git status
-git add .
-git commit -m "docs: complete iam study and lab"
-git push
+git log --oneline --decorate -n 10
 ```
-
-Não criar commits duplicados sem necessidade. Se alterações do módulo já tiverem sido parcialmente commitadas, verificar o estado atual antes de criar outro commit.
 
 ---
 
@@ -294,13 +349,21 @@ Arquitetura planejada:
 
 ```text
 Internet
+
    ↓
+
 ALB
+
    ↓
+
 ECS / Fargate
+
    ├── SQS
+   │
    └── RDS
+
         ↓
+
 CloudWatch
 
 Docker → ECR → ECS
@@ -308,9 +371,29 @@ Docker → ECR → ECS
 
 A relação entre os serviços deve ser apresentada conforme eles forem estudados.
 
-Exemplo:
+Exemplos:
 
-IAM Role estudada no Day 3 será reutilizada no EC2.
+```text
+IAM Role
+    ↓
+EC2
+
+ECR
+    ↓
+ECS
+
+VPC / Private Subnets
+    ↓
+RDS
+
+ECS
+    ↓
+SQS
+
+ECS / RDS / SQS
+    ↓
+CloudWatch
+```
 
 ---
 
@@ -338,6 +421,12 @@ Deve-se:
 10. atualizar o `docs/learning-log.md`;
 11. atualizar a tabela de Labs;
 12. indicar claramente o próximo módulo.
+
+**Estado atual: Day 7 — RDS concluído.**
+
+O próximo módulo é:
+
+**Day 8 — ECR.**
 
 ---
 
@@ -412,9 +501,242 @@ Hands-on:
 * validação da Trust Policy;
 * validação da Permissions Policy.
 
-A Role deve permanecer para ser utilizada posteriormente no módulo de EC2.
+A Role permanece para utilização no módulo de EC2.
 
-Nenhum recurso de infraestrutura com cobrança foi criado no Day 3.
+---
+
+### Day 4 — VPC
+
+Concluído.
+
+Infraestrutura principal:
+
+```text
+VPC:
+10.0.0.0/16
+
+sa-east-1a
+├── public-a  → 10.0.1.0/24
+└── private-a → 10.0.11.0/24
+
+sa-east-1b
+├── public-b  → 10.0.2.0/24
+└── private-b → 10.0.12.0/24
+```
+
+Foram estudados:
+
+* VPC;
+* CIDR;
+* Subnets;
+* Route Tables;
+* Internet Gateway;
+* Security Groups;
+* subnet pública vs privada;
+* NAT Gateway;
+* Availability Zones;
+* Least Privilege.
+
+NAT Gateway não foi criado devido ao custo.
+
+---
+
+### Day 5 — EC2
+
+Concluído.
+
+Foram estudados:
+
+* EC2;
+* AMI;
+* Instance Type;
+* EBS;
+* Instance Store;
+* Security Group;
+* IP privado e público;
+* IAM Role;
+* Instance Profile;
+* Stop vs Start;
+* Stop vs Terminate;
+* `DeleteOnTermination`;
+* Terraform State;
+* `terraform apply -refresh-only`;
+* Least Privilege.
+
+Hands-on:
+
+```text
+Instance Type: t3.nano
+AMI: Amazon Linux 2023 Minimal
+AZ: sa-east-1a
+Subnet: public-a
+EBS: gp3 / 2 GiB
+```
+
+A EC2 utilizou a Role:
+
+```text
+aws-cloud-practitioner-lab-ec2-s3-read
+```
+
+Os recursos temporários foram destruídos.
+
+---
+
+### Day 6 — S3
+
+Concluído.
+
+Foram estudados:
+
+* S3 como Object Storage;
+* Bucket;
+* Object;
+* Object Key;
+* Bucket names globalmente únicos;
+* S3 vs EBS vs EFS;
+* Storage Classes;
+* Versioning;
+* Delete Marker;
+* IAM Policy;
+* Bucket permissions vs Object permissions;
+* Block Public Access;
+* Least Privilege.
+
+Hands-on:
+
+* criação de bucket com Terraform;
+* Block Public Access;
+* upload;
+* download;
+* list;
+* delete;
+* Versioning;
+* Delete Marker;
+* recuperação de versão;
+* cleanup automático com `force_destroy`.
+
+O bucket e seus objetos foram destruídos com sucesso.
+
+Policy utilizada:
+
+```text
+aws-cloud-practitioner-lab-s3
+```
+
+---
+
+### Day 7 — RDS
+
+Concluído.
+
+Foram estudados:
+
+* RDS como serviço gerenciado de banco relacional;
+* MySQL;
+* DB Subnet Group;
+* RDS em subnet privada;
+* Security Group;
+* Multi-AZ;
+* Read Replica;
+* Backup;
+* Snapshot;
+* Point-in-Time Recovery;
+* IAM;
+* Service-Linked Role;
+* Least Privilege.
+
+Hands-on realizado:
+
+```text
+Engine: MySQL
+Instance: db.t4g.micro
+Storage: 20 GB gp3
+Encryption: enabled
+Publicly accessible: false
+Multi-AZ: false
+Port: 3306
+```
+
+O RDS utilizou as subnets privadas existentes:
+
+```text
+private-a → subnet-0117c0db343d98f9b
+private-b → subnet-0e85409ac28b247d6
+```
+
+A VPC utilizada foi:
+
+```text
+vpc-09902363bc6acf897
+```
+
+Foi criado um Security Group específico para o RDS.
+
+Na validação final:
+
+```text
+Ingress: []
+Egress: []
+```
+
+Portanto, nenhuma conexão de entrada foi autorizada.
+
+### Problema de IAM encontrado
+
+A primeira tentativa de criação do RDS falhou por ausência de:
+
+```text
+iam:CreateServiceLinkedRole
+```
+
+A policy `aws-cloud-practitioner-lab-rds` foi ajustada para permitir a criação da Service-Linked Role específica do RDS.
+
+Após o ajuste, o RDS foi criado com sucesso.
+
+A Role `AWSServiceRoleForRDS` foi validada.
+
+### Validação final
+
+O RDS ficou:
+
+```text
+Status: available
+```
+
+E foi confirmado utilizando AWS CLI:
+
+```text
+VPC:
+vpc-09902363bc6acf897
+
+Subnets:
+subnet-0e85409ac28b247d6
+subnet-0117c0db343d98f9b
+
+Security Group:
+sg-0a5083136ae021200
+
+PubliclyAccessible:
+false
+
+MultiAZ:
+false
+
+Port:
+3306
+```
+
+Após os testes, o RDS foi destruído com sucesso.
+
+O Terraform State permaneceu somente com:
+
+```text
+aws_iam_policy.rds
+aws_iam_user_policy_attachment.rds
+```
+
+A policy IAM permanece para o módulo.
 
 ---
 
@@ -439,7 +761,7 @@ Não simplificar excessivamente conceitos importantes apenas para tornar a expli
 
 ## 15. Continuidade em uma nova conversa
 
-Se esta conversa ficar muito longa, uma nova conversa pode ser iniciada usando este arquivo como contexto.
+Se esta conversa ficar muito longa, uma nova conversa pode ser iniciada usando este arquivo e o `docs/learning-log.md` como contexto.
 
 Mensagem recomendada:
 
@@ -449,9 +771,9 @@ Mensagem recomendada:
 >
 > Mantenha exatamente a metodologia definida no `study-context.md`.
 >
-> O último módulo concluído é o Day 3 — IAM.
+> O último módulo concluído é o **Day 7 — RDS**.
 >
-> Quero continuar pelo próximo módulo, Day 4 — VPC.
+> Quero continuar pelo próximo módulo, **Day 8 — ECR**.
 >
 > Não repita os módulos anteriores. Comece pelas perguntas de diagnóstico e siga a sequência:
 >
@@ -465,6 +787,10 @@ Mensagem recomendada:
 > 8. conclusão e indicação do próximo dia.
 >
 > Priorize segurança de custos, aprendizado real e explicações passo a passo.
+>
+> **Não tente inferir padrões. Se houver alguma dúvida sobre como os módulos anteriores foram conduzidos, pergunte antes de prosseguir.**
+
+---
 
 ## 16. Estado atual das credenciais e IAM do laboratório
 
@@ -478,80 +804,27 @@ aws-cloud-practitioner-lab
 
 O Terraform utiliza as credenciais configuradas localmente no AWS CLI para esse usuário.
 
-Portanto, quando o Terraform executa uma operação como:
+As permissões disponíveis são as permissões desse usuário e não as permissões do Root User ou de outra identidade IAM.
 
-```bash
-terraform apply
-```
+### Policies específicas dos módulos
 
-as permissões disponíveis são as permissões do usuário:
+O laboratório utiliza policies específicas conforme cada módulo exige.
 
-```text
-aws-cloud-practitioner-lab
-```
-
-e **não** as permissões do Root User ou de qualquer outra identidade IAM.
-
-### Estado das permissões
-
-Durante o Day 3 — IAM, o usuário foi inicialmente configurado com:
-
-```text
-AdministratorAccess
-```
-
-Isso permitiu realizar a configuração inicial do laboratório.
-
-Posteriormente, `AdministratorAccess` foi removido para demonstrar o princípio de Least Privilege.
-
-Foi criada e mantida a policy personalizada:
+Atualmente foram utilizadas, entre outras:
 
 ```text
 aws-cloud-practitioner-lab-read-identity
+aws-cloud-practitioner-lab-vpc
+aws-cloud-practitioner-lab-ec2
+aws-cloud-practitioner-lab-s3
+aws-cloud-practitioner-lab-rds
 ```
 
-com a permissão:
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "sts:GetCallerIdentity"
-      ],
-      "Resource": "*"
-    }
-  ]
-}
-```
-
-Essa policy permite consultar a identidade atual, mas **não permite criar ou modificar recursos de infraestrutura**.
-
-Por exemplo, o usuário consegue executar consultas como:
-
-```bash
-aws sts get-caller-identity
-```
-
-e o Terraform consegue consultar a identidade e a região, mas uma tentativa de criar uma VPC resulta em `403 AccessDenied` porque o usuário não possui permissões como:
-
-```text
-ec2:CreateVpc
-ec2:CreateSubnet
-ec2:CreateRouteTable
-ec2:CreateInternetGateway
-...
-```
+O princípio adotado é adicionar somente as permissões necessárias para o exercício.
 
 ### Regra para os próximos hands-on
 
-Antes de executar um `terraform apply` que crie ou modifique recursos AWS, verificar se o usuário utilizado pelo Terraform possui as permissões necessárias.
-
-Não assumir que o fato de o Terraform estar funcionando significa que ele possui permissões para criar qualquer recurso.
-
-O fluxo esperado deve ser:
+Antes de executar um `terraform apply` que crie ou modifique recursos AWS:
 
 ```text
 identificar recurso
@@ -571,31 +844,17 @@ documentar
 terraform destroy
 ```
 
-Quando um novo módulo exigir permissões adicionais, devemos decidir conscientemente entre:
-
-1. criar/adicionar uma policy específica para o laboratório;
-2. utilizar permissões administrativas temporariamente, quando isso fizer sentido didático;
-3. remover/reduzir as permissões novamente após o exercício.
-
-A decisão deve ser explicada antes da execução.
-
-### AdministratorAccess
-
-`AdministratorAccess` pode ser utilizado temporariamente para determinados exercícios, mas não deve ser tratado como a configuração permanente do usuário do laboratório.
-
-Se for necessário reativá-lo para um exercício, registrar isso no aprendizado e, ao terminar, avaliar a remoção ou substituição pelas permissões mínimas necessárias.
-
-**Importante:** não executar `terraform apply` esperando que uma policy de apenas `sts:GetCallerIdentity` consiga criar recursos como VPC, EC2, S3, RDS etc.
+Não assumir que o Terraform possui permissões suficientes somente porque consegue executar `plan` ou consultar a identidade.
 
 ### IAM Role criada no Day 3
 
-Também existe a Role:
+Existe a Role:
 
 ```text
 aws-cloud-practitioner-lab-ec2-s3-read
 ```
 
-Essa Role possui:
+Ela possui:
 
 ```text
 Trust Policy:
@@ -605,63 +864,38 @@ Permissions Policy:
 AmazonS3ReadOnlyAccess
 ```
 
-Essa Role **não concede permissões ao usuário `aws-cloud-practitioner-lab`**.
+Essa Role não concede permissões ao usuário `aws-cloud-practitioner-lab`.
 
-Ela será utilizada posteriormente no módulo de EC2 para demonstrar o uso de credenciais temporárias:
-
-```text
-EC2
- ↓
-assume Role
- ↓
-credenciais temporárias
- ↓
-permissões da Role
- ↓
-S3
-```
+Ela será utilizada para demonstrar credenciais temporárias em workloads AWS.
 
 ### Regra de segurança
 
 Nunca colocar Access Key ou Secret Access Key diretamente no Terraform, código ou Git.
 
-O Terraform deve continuar utilizando as credenciais configuradas pelo AWS CLI/ambiente local.
+---
 
 ## 17. Padrão de commits e histórico do projeto
 
 ### Padrão de mensagens
 
-Os commits devem utilizar o padrão:
-
 ```text
 tipo: descrição curta em inglês
 ```
 
-Tipos utilizados até o momento:
+Tipos utilizados:
 
-* `docs:` → documentação, anotações, atualização de status e learning log;
-* `feat:` → implementação de novos recursos ou infraestrutura do laboratório.
-
-Exemplos:
-
-```text
-docs: complete iam study and lab
-feat: add iam terraform lab
-docs: add study context and methodology
-docs: update AWS lab IAM context
-```
+* `docs:`
+* `feat:`
 
 As mensagens devem ser:
 
 * curtas;
 * objetivas;
 * em inglês;
-* iniciadas por um tipo semântico (`docs:`, `feat:`, etc.);
+* iniciadas por um tipo semântico;
 * descrever claramente o que foi alterado.
 
-Não é necessário incluir o número do Day na mensagem quando a descrição já deixa clara a alteração.
-
-### Histórico atual
+### Histórico registrado anteriormente
 
 ```text
 e47533e (HEAD -> main) docs: update AWS lab IAM context
@@ -675,16 +909,7 @@ c9f6694 docs: update project README
 0907a44 Initial commit
 ```
 
-### Estado atual do Git
-
-O branch local `main` está atualmente à frente de `origin/main` pelos commits:
-
-```text
-e47533e docs: update AWS lab IAM context
-59f8c18 docs: add study context and methodology
-```
-
-Antes de iniciar um novo commit, sempre verificar:
+Antes de iniciar um novo commit:
 
 ```bash
 git status
@@ -693,16 +918,36 @@ git log --oneline --decorate -n 10
 
 Evitar commits duplicados quando uma alteração já tiver sido registrada.
 
-Após concluir um módulo, o fluxo esperado é:
+### Commits do Day 7
+
+O Day 7 envolve duas categorias de alteração:
 
 ```text
-git status
-      ↓
-revisar alterações
-      ↓
-git add
-      ↓
-git commit -m "tipo: descrição"
-      ↓
-git push
+feat:
+→ infraestrutura Terraform do RDS
+
+docs:
+→ README, learning log e contexto
+```
+
+Os commits exatos devem ser definidos após verificar o estado atual do Git, para evitar duplicação.
+
+---
+
+## 18. Estado atual do curso
+
+```text
+Day 1 → Cloud Concepts          ✅
+Day 2 → Global Infrastructure   ✅
+Day 3 → IAM                     ✅
+Day 4 → VPC                     ✅
+Day 5 → EC2                     ✅
+Day 6 → S3                      ✅
+Day 7 → RDS                     ✅
+Day 8 → ECR                     ⬜ Próximo
+Day 9 → ECS                     ⬜
+Day 10 → SQS                    ⬜
+Day 11 → CloudWatch             ⬜
+Day 12 → Auto Scaling           ⬜
+Day 13 → Final Project          ⬜
 ```

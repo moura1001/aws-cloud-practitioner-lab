@@ -1083,3 +1083,197 @@ O experimento de Versioning demonstrou na prática que excluir um objeto não ne
 **Day 6 — S3: Completed**
 
 ---
+
+# Day 7 — RDS
+
+**Status:** Concluído
+
+**Resultado:** Bom entendimento dos conceitos fundamentais de RDS e de sua integração com VPC, subnets, Security Groups e IAM. O hands-on também demonstrou na prática a necessidade de uma Service-Linked Role para o RDS.
+
+## Conceitos estudados
+
+* RDS como serviço gerenciado de banco de dados relacional;
+* MySQL;
+* DB Subnet Group;
+* RDS em subnet privada;
+* Security Group;
+* Multi-AZ;
+* Read Replica;
+* Backup / Snapshot / Point-in-Time Recovery;
+* IAM e Service-Linked Role;
+* Least Privilege;
+* Terraform.
+
+## Principais aprendizados
+
+### RDS
+
+RDS é um serviço gerenciado de banco de dados relacional.
+
+```text
+RDS → Relational Database
+S3  → Object Storage
+EBS → Block Storage
+EFS → File Storage
+```
+
+### Multi-AZ x Read Replica
+
+```text
+Multi-AZ
+→ alta disponibilidade / failover
+
+Read Replica
+→ escalabilidade de leitura
+```
+
+São mecanismos com objetivos diferentes.
+
+### RDS e VPC
+
+O RDS foi criado utilizando as subnets privadas existentes:
+
+```text
+private-a → subnet-0117c0db343d98f9b
+private-b → subnet-0e85409ac28b247d6
+```
+
+O RDS foi configurado como:
+
+```text
+PubliclyAccessible → false
+MultiAZ            → false
+Port               → 3306
+```
+
+### Security Group
+
+Foi criado um Security Group específico:
+
+```text
+aws-cloud-practitioner-lab-rds
+```
+
+A validação final mostrou:
+
+```text
+Ingress → []
+Egress  → []
+```
+
+Portanto, nenhuma conexão de entrada foi autorizada.
+
+Uma futura aplicação poderia receber acesso ao RDS através de uma regra TCP 3306 originada no Security Group da aplicação.
+
+## Hands-on realizado
+
+Foi criado com Terraform:
+
+```text
+RDS MySQL
+DB Subnet Group
+Security Group
+```
+
+Configuração principal:
+
+```text
+Engine: MySQL
+Instance: db.t4g.micro
+Storage: 20 GB gp3
+Encryption: enabled
+Publicly accessible: false
+Multi-AZ: false
+```
+
+O `terraform plan` apresentou:
+
+```text
+Plan: 3 to add, 0 to change, 0 to destroy.
+```
+
+Após o `apply`, o RDS ficou disponível e foi validado diretamente utilizando AWS CLI.
+
+## Service-Linked Role
+
+A primeira tentativa de criação do RDS falhou porque faltava:
+
+```text
+iam:CreateServiceLinkedRole
+```
+
+A policy específica do laboratório foi ajustada para permitir a criação da Service-Linked Role do RDS.
+
+Depois do ajuste, o RDS foi criado com sucesso.
+
+A Role `AWSServiceRoleForRDS` também foi validada.
+
+### Aprendizado
+
+As permissões necessárias para utilizar um serviço AWS podem incluir permissões auxiliares relacionadas à infraestrutura gerenciada pelo próprio serviço.
+
+Isso reforça a necessidade de validar as permissões durante o processo de Least Privilege.
+
+## Validação final
+
+O RDS foi confirmado na infraestrutura correta:
+
+```text
+VPC:
+vpc-09902363bc6acf897
+
+Subnets:
+subnet-0e85409ac28b247d6
+subnet-0117c0db343d98f9b
+
+Security Group:
+sg-0a5083136ae021200
+
+PubliclyAccessible:
+false
+
+MultiAZ:
+false
+
+Port:
+3306
+```
+
+O Security Group também foi validado na VPC correta e sem regras de ingress ou egress.
+
+## Controle de custos
+
+O RDS foi utilizado apenas para o exercício prático e posteriormente destruído.
+
+Também não foram utilizados Multi-AZ, Read Replica ou NAT Gateway.
+
+```text
+create → test → observe → document → destroy
+```
+
+Após o cleanup, permaneceram no Terraform State somente os recursos IAM:
+
+```text
+aws_iam_policy.rds
+aws_iam_user_policy_attachment.rds
+```
+
+## Resultado
+
+* [x] Estudar RDS
+* [x] Compreender RDS como serviço gerenciado
+* [x] Estudar DB Subnet Group
+* [x] Estudar RDS em subnet privada
+* [x] Estudar Security Group
+* [x] Diferenciar Multi-AZ e Read Replica
+* [x] Estudar backup e recuperação
+* [x] Criar RDS com Terraform
+* [x] Praticar Least Privilege
+* [x] Corrigir permissão de Service-Linked Role
+* [x] Validar VPC, subnets e Security Group
+* [x] Destruir os recursos temporários
+* [x] Consolidar conceitos da CLF-C02
+
+**Day 7 — RDS: concluído.**
+
+---
