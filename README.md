@@ -24,7 +24,7 @@ The goal of this project is to combine theoretical study with practical experien
 | 04 | VPC                           | Hands-on | ✅ Completed |
 | 05 | EC2                           | Hands-on | ✅ Completed |
 | 06 | S3                            | Hands-on | ✅ Completed |
-| 07 | RDS                           | —        | ⬜ Not started |
+| 07 | RDS                           | Hands-on | ✅ Completed |
 | 08 | ECR                           | —        | ⬜ Not started |
 | 09 | ECS                           | —        | ⬜ Not started |
 | 10 | SQS                           | —        | ⬜ Not started |
