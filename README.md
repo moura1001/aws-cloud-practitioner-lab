@@ -25,7 +25,7 @@ The goal of this project is to combine theoretical study with practical experien
 | 05 | EC2                           | Hands-on | ✅ Completed |
 | 06 | S3                            | Hands-on | ✅ Completed |
 | 07 | RDS                           | Hands-on | ✅ Completed |
-| 08 | ECR                           | —        | ⬜ Not started |
+| 08 | ECR                           | Hands-on | ✅ Completed |
 | 09 | ECS                           | —        | ⬜ Not started |
 | 10 | SQS                           | —        | ⬜ Not started |
 | 11 | CloudWatch                    | —        | ⬜ Not started |

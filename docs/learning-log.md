@@ -1277,3 +1277,151 @@ aws_iam_user_policy_attachment.rds
 **Day 7 — RDS: concluído.**
 
 ---
+
+# Day 8 — ECR
+
+**Status:** Concluído
+
+**Resultado:** Bom entendimento do papel do ECR como Container Registry e de sua relação com Docker e ECS. O hands-on também reforçou conceitos de Image, Container, Repository, Tag, Digest e Least Privilege.
+
+## Conceitos estudados
+
+* ECR como Container Registry;
+* Docker Image x Container;
+* Registry x Repository;
+* Image Tag;
+* Image Digest;
+* Push x Pull;
+* ECR x ECS;
+* ECR x VPC;
+* IAM e Least Privilege;
+* autenticação do Docker no ECR.
+
+## Principais aprendizados
+
+### ECR x ECS
+
+```text
+ECR
+→ armazena e distribui imagens
+
+ECS
+→ gerencia a execução dos containers
+```
+
+O ECR não executa containers.
+
+### Image x Container
+
+```text
+Image
+→ artefato/template
+
+Container
+→ instância em execução da Image
+```
+
+### Tag x Digest
+
+```text
+Tag
+→ referência legível
+
+Digest
+→ identificação baseada no conteúdo
+```
+
+Foi utilizada a tag:
+
+```text
+1.0
+```
+
+e validado o Digest da imagem no ECR.
+
+## Hands-on
+
+Foi criado com Terraform o repository:
+
+```text
+aws-cloud-practitioner-lab
+```
+
+na região:
+
+```text
+sa-east-1
+```
+
+Foi criada uma policy específica:
+
+```text
+aws-cloud-practitioner-lab-ecr
+```
+
+e anexada ao usuário:
+
+```text
+aws-cloud-practitioner-lab
+```
+
+Foi criada uma Docker Image, autenticada no ECR e realizado:
+
+```text
+docker push
+```
+
+A imagem foi validada utilizando:
+
+```bash
+aws ecr describe-images
+```
+
+Depois a imagem foi removida localmente e recuperada novamente através de:
+
+```text
+docker pull
+```
+
+O Digest observado no ECR correspondeu ao Digest retornado pelo Docker.
+
+## Problemas e aprendizados
+
+Durante o cleanup, o Terraform inicialmente não conseguiu remover o repository porque ele ainda continha imagens.
+
+Também foi necessário ajustar a permissão:
+
+```text
+iam:DetachUserPolicy
+```
+
+para permitir que o Terraform removesse a associação da policy durante o cleanup.
+
+Isso reforçou que as permissões necessárias para destruir recursos podem ser diferentes das utilizadas durante sua criação.
+
+## Controle de custos
+
+O ECR foi utilizado apenas durante o exercício e o repository foi destruído ao final.
+
+Não foram mantidos recursos temporários do módulo.
+
+```text
+create → test → observe → document → destroy
+```
+
+## Resultado
+
+* [x] Estudar ECR
+* [x] Criar ECR Repository com Terraform
+* [x] Aplicar Least Privilege
+* [x] Criar e enviar Docker Image
+* [x] Validar imagem no ECR
+* [x] Fazer pull da imagem
+* [x] Compreender Tag e Digest
+* [x] Corrigir problemas de cleanup
+* [x] Destruir os recursos temporários
+* [x] Consolidar conceitos da CLF-C02
+
+**Day 8 — ECR: concluído.**
+
+---

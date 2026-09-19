@@ -61,14 +61,14 @@ aws-cloud-practitioner-lab/
 | 05 | EC2                   | Hands-on | ✅ Completed   |
 | 06 | S3                    | Hands-on | ✅ Completed   |
 | 07 | RDS                   | Hands-on | ✅ Completed   |
-| 08 | ECR                   | Hands-on | ⬜ Not started |
+| 08 | ECR                   | Hands-on | ✅ Completed |
 | 09 | ECS                   | Hands-on | ⬜ Not started |
 | 10 | SQS                   | Hands-on | ⬜ Not started |
 | 11 | CloudWatch            | Hands-on | ⬜ Not started |
 | 12 | Auto Scaling          | Hands-on | ⬜ Not started |
 | 13 | Final Project         | Hands-on | ⬜ Not started |
 
-**Próximo módulo: Day 8 — ECR.**
+**Próximo módulo: Day 9 — ECS.**
 
 ---
 
@@ -422,11 +422,11 @@ Deve-se:
 11. atualizar a tabela de Labs;
 12. indicar claramente o próximo módulo.
 
-**Estado atual: Day 7 — RDS concluído.**
+**Estado atual: Day 8 — ECR concluído.**
 
 O próximo módulo é:
 
-**Day 8 — ECR.**
+**Day 9 — ECS.**
 
 ---
 
@@ -740,6 +740,120 @@ A policy IAM permanece para o módulo.
 
 ---
 
+### Day 8 — ECR
+
+Concluído.
+
+Foram estudados:
+
+* ECR como Container Registry;
+* Docker Image x Container;
+* Registry x Repository;
+* Image Tag;
+* Image Digest;
+* Push x Pull;
+* ECR x ECS;
+* ECR x VPC;
+* IAM e Least Privilege.
+
+Hands-on realizado:
+
+```text
+Docker Image
+    ↓
+ECR Repository
+    ↓
+docker push
+    ↓
+ECR
+    ↓
+docker pull
+```
+
+Foi criado o repository:
+
+```text
+aws-cloud-practitioner-lab
+```
+
+na região:
+
+```text
+sa-east-1
+```
+
+Foi criada e anexada ao usuário a policy:
+
+```text
+aws-cloud-practitioner-lab-ecr
+```
+
+A imagem Docker recebeu a tag:
+
+```text
+1.0
+```
+
+e foi enviada ao ECR.
+
+A imagem foi validada utilizando AWS CLI através de:
+
+```bash
+aws ecr describe-images
+```
+
+Depois foi removida do ambiente Docker local e recuperada novamente utilizando `docker pull`, demonstrando o fluxo de armazenamento e distribuição do ECR.
+
+### Cleanup
+
+Durante o cleanup, o repository inicialmente não pôde ser destruído porque ainda continha imagens.
+
+Após a remoção necessária das imagens, o repository foi destruído com sucesso.
+
+Também foi identificado durante o cleanup que a policy do usuário precisava da permissão:
+
+```text
+iam:DetachUserPolicy
+```
+
+para que o Terraform pudesse remover sua associação.
+
+Isso reforçou a diferença entre as permissões necessárias para criação e destruição de recursos.
+
+### Estado final
+
+Os recursos temporários do ECR foram destruídos.
+
+A policy:
+
+```text
+aws-cloud-practitioner-lab-ecr
+```
+
+permanece associada ao usuário para o contexto do laboratório, conforme o padrão adotado nos módulos anteriores.
+
+### Relação com os próximos módulos
+
+O principal modelo mental consolidado foi:
+
+```text
+Docker
+   ↓
+ECR
+   ↓
+ECS
+   ↓
+Container
+```
+
+O próximo módulo utilizará esse conhecimento para estudar o **Amazon ECS**, responsável pelo gerenciamento da execução dos containers.
+
+**Day 8 — ECR: concluído.**
+
+**Próximo módulo: Day 9 — ECS.**
+
+---
+
 ## 14. Padrão de explicação desejado
 
 O aluno prefere:
@@ -944,8 +1058,8 @@ Day 4 → VPC                     ✅
 Day 5 → EC2                     ✅
 Day 6 → S3                      ✅
 Day 7 → RDS                     ✅
-Day 8 → ECR                     ⬜ Próximo
-Day 9 → ECS                     ⬜
+Day 8 → ECR                     ✅
+Day 9 → ECS                     ⬜ Próximo
 Day 10 → SQS                    ⬜
 Day 11 → CloudWatch             ⬜
 Day 12 → Auto Scaling           ⬜
