@@ -1425,3 +1425,206 @@ create → test → observe → document → destroy
 **Day 8 — ECR: concluído.**
 
 ---
+
+## Day 9 — ECS
+
+### Conteúdo estudado
+
+Estudamos o **Amazon ECS (Elastic Container Service)** como serviço de orquestração de containers.
+
+Principais conceitos:
+
+* **ECS**: serviço de orquestração que gerencia a execução e o ciclo de vida de containers.
+* **ECR**: serviço usado para armazenar e distribuir imagens de containers.
+* **Cluster**: agrupamento lógico de recursos do ECS onde as Tasks são executadas.
+* **Task Definition**: template que define como uma Task deve ser executada, incluindo imagem, CPU, memória, rede, roles e configuração de logs.
+* **Task**: instância em execução de uma Task Definition.
+* **Container**: processo baseado na imagem especificada na Task Definition.
+* **Service**: mantém a quantidade desejada de Tasks em execução e substitui Tasks que deixam de funcionar.
+* **Fargate**: opção de computação serverless para ECS, na qual a AWS gerencia a infraestrutura necessária para executar os containers.
+* **ECS com EC2**: alternativa em que as instâncias EC2 fornecem a infraestrutura de computação para as Tasks.
+* **CloudWatch Logs**: utilizado para armazenar e observar os logs produzidos pelos containers.
+
+Fluxo estudado:
+
+```text
+Docker
+  ↓
+ECR
+  ↓
+ECS Cluster
+  ↓
+ECS Service
+  ↓
+Fargate Task
+  ↓
+Container
+  ↓
+CloudWatch Logs
+```
+
+Também foi reforçada a diferença entre os componentes:
+
+* **ECR armazena a imagem**.
+* **ECS orquestra a execução**.
+* **Fargate fornece a capacidade de computação sem gerenciamento direto de servidores**.
+* **Task Definition descreve como executar o container**.
+* **Task representa uma execução da definição**.
+* **Service mantém a quantidade desejada de Tasks**.
+
+### Diagnóstico
+
+O diagnóstico inicial mostrou que os conceitos gerais de containers e Task Definition já eram parcialmente conhecidos, mas havia dúvidas principalmente sobre:
+
+* diferença entre ECS e um cluster de máquinas;
+* relação entre Cluster, Task Definition, Task, Container e Service;
+* diferença entre Fargate e EC2;
+* comportamento de um ECS Service quando uma Task é interrompida;
+* componentes necessários para uma arquitetura ECS.
+
+Durante a correção, foi estabelecido que ECS não é simplesmente um gerenciador de máquinas, mas um serviço de **orquestração de containers**. Também foi esclarecido que um Cluster é um agrupamento lógico e não necessariamente um conjunto de instâncias EC2, pois o ECS pode utilizar Fargate.
+
+### Laboratório prático
+
+Foi criado um laboratório ECS utilizando Terraform, ECR e Fargate.
+
+Recursos utilizados:
+
+* ECS Cluster;
+* ECS Service;
+* ECS Task Definition;
+* Fargate;
+* ECR como origem da imagem;
+* IAM Role para execução da Task;
+* Security Group;
+* CloudWatch Log Group;
+* VPC e subnets públicas existentes.
+
+A Task Definition utilizou:
+
+* CPU: `256`;
+* memória: `512 MiB`;
+* network mode: `awsvpc`;
+* launch type: Fargate;
+* imagem `aws-cloud-practitioner-lab:1.0` armazenada no ECR.
+
+O Service foi configurado com:
+
+```text
+desired_count = 1
+```
+
+e utilizando as subnets públicas existentes, com atribuição de IP público.
+
+Não foi utilizado Application Load Balancer nem RDS neste laboratório, mantendo o primeiro exercício de ECS simples e focado nos conceitos de execução e orquestração.
+
+### IAM
+
+Foi criada uma política específica para o laboratório ECS, evitando utilizar `AdministratorAccess` como permissão permanente.
+
+Durante a implementação foram identificadas algumas permissões necessárias:
+
+* gerenciamento dos recursos ECS;
+* gerenciamento do CloudWatch Logs;
+* gerenciamento do Security Group;
+* gerenciamento da IAM Role de execução;
+* `iam:PassRole`;
+* `iam:CreateServiceLinkedRole` para permitir a criação/uso da service-linked role do ECS;
+* `logs:DescribeLogStreams` para inspeção dos streams de logs;
+* `iam:ListInstanceProfilesForRole` durante o processo de destruição.
+
+Também foi utilizado o **ECS Task Execution Role**, assumido pelo serviço `ecs-tasks.amazonaws.com`, com a política gerenciada `AmazonECSTaskExecutionRolePolicy`.
+
+### Validação
+
+Após a criação, o ECS Service apresentou:
+
+```text
+Status: ACTIVE
+Desired: 1
+Running: 1
+Pending: 0
+```
+
+A Task executou em Fargate com:
+
+```text
+LaunchType: FARGATE
+CPU: 256
+Memory: 512
+```
+
+Os logs do container foram encontrados no CloudWatch Logs, confirmando a inicialização do Nginx dentro do container.
+
+Entre os eventos observados estavam:
+
+```text
+/docker-entrypoint.sh
+nginx/1.31.6
+start worker processes
+```
+
+Isso confirmou que não apenas a Task estava em estado `RUNNING`, mas que o container havia iniciado efetivamente a aplicação.
+
+### Teste de self-healing
+
+Para validar o comportamento do ECS Service, a Task em execução foi interrompida manualmente:
+
+```bash
+aws ecs stop-task \
+  --cluster aws-cloud-practitioner-lab \
+  --task <task-id> \
+  --region sa-east-1
+```
+
+O Service detectou a redução da quantidade de Tasks e iniciou automaticamente uma nova Task para manter:
+
+```text
+desired_count = 1
+```
+
+A nova Task entrou em estado `RUNNING`.
+
+Esse teste demonstrou na prática a responsabilidade do **ECS Service** de manter a quantidade desejada de Tasks.
+
+### Terraform
+
+Ao final da validação:
+
+```text
+No changes. Your infrastructure matches the configuration.
+```
+
+Isso confirmou que os recursos existentes estavam de acordo com a configuração Terraform.
+
+Após os testes, foi executado:
+
+```bash
+terraform destroy
+```
+
+Os recursos criados especificamente para o laboratório ECS foram destruídos para evitar custos desnecessários.
+
+### Resultado do Day 9
+
+Concluído o estudo e laboratório de **Amazon ECS**, incluindo:
+
+* ECS;
+* Cluster;
+* Task Definition;
+* Task;
+* Container;
+* Service;
+* Fargate;
+* ECR + ECS;
+* IAM Task Execution Role;
+* CloudWatch Logs;
+* execução de containers em Fargate;
+* manutenção de desired count;
+* substituição automática de Tasks;
+* validação com Terraform;
+* destruição dos recursos após o laboratório.
+
+**Status:** concluído.
+
+---

@@ -850,7 +850,141 @@ O próximo módulo utilizará esse conhecimento para estudar o **Amazon ECS**, r
 
 **Day 8 — ECR: concluído.**
 
-**Próximo módulo: Day 9 — ECS.**
+---
+
+### Day 9 — ECS
+
+Concluído.
+
+Foram estudados:
+
+* ECS como serviço de orquestração de containers;
+* ECS Cluster;
+* Task Definition;
+* Task;
+* ECS Service;
+* Fargate;
+* ECS × ECR;
+* Execution Role;
+* CloudWatch Logs;
+* Security Group;
+* IAM Least Privilege;
+* desired count;
+* substituição automática de Tasks.
+
+Hands-on realizado com Terraform:
+
+```text
+ECR
+ ↓
+ECS Cluster
+ ↓
+ECS Service
+ ↓
+Fargate Task
+ ↓
+Container
+ ↓
+CloudWatch Logs
+```
+
+Configuração principal:
+
+```text
+Cluster:
+aws-cloud-practitioner-lab
+
+Service:
+aws-cloud-practitioner-lab
+
+Launch Type:
+FARGATE
+
+Desired Count:
+1
+
+CPU:
+256
+
+Memory:
+512
+
+Network Mode:
+awsvpc
+
+Log Group:
+/aws/ecs/aws-cloud-practitioner-lab
+```
+
+A imagem utilizada foi:
+
+```text
+aws-cloud-practitioner-lab:1.0
+```
+
+proveniente do ECR utilizado no Day 8.
+
+### Validações realizadas
+
+O ECS Service foi validado com uma Task em estado `RUNNING`.
+
+Os logs do container foram recuperados pelo CloudWatch Logs e demonstraram a inicialização do Nginx.
+
+Uma Task foi interrompida manualmente utilizando AWS CLI. O ECS Service iniciou automaticamente uma nova Task para manter:
+
+```text
+desired_count = 1
+```
+
+O Terraform também foi validado após o teste:
+
+```text
+No changes.
+Your infrastructure matches the configuration.
+```
+
+### Problemas de IAM encontrados
+
+A criação do ECS Service inicialmente exigiu:
+
+```text
+iam:CreateServiceLinkedRole
+```
+
+A policy `aws-cloud-practitioner-lab-ecs` foi ajustada para permitir a criação da Service-Linked Role específica do ECS.
+
+Para observação dos logs foi necessário:
+
+```text
+logs:DescribeLogStreams
+```
+
+Durante o cleanup também foram identificadas permissões adicionais necessárias para operações de destruição, incluindo:
+
+```text
+iam:ListInstanceProfilesForRole
+iam:DetachUserPolicy
+```
+
+Esses problemas reforçaram o princípio de que as permissões necessárias para criar, observar e destruir recursos podem ser diferentes.
+
+### Controle de custos
+
+Foi utilizada uma única Fargate Task com CPU `256` e memória `512`.
+
+Foi utilizada retenção de logs de 1 dia.
+
+Não foram utilizados:
+
+* NAT Gateway;
+* Load Balancer;
+* EC2 dedicada para o ECS.
+
+Os recursos temporários do ECS foram destruídos após os testes.
+
+**Estado atual: Day 9 — ECS concluído.**
+
+**Próximo módulo: Day 10 — SQS.**
 
 ---
 
@@ -1050,18 +1184,40 @@ Os commits exatos devem ser definidos após verificar o estado atual do Git, par
 
 ## 18. Estado atual do curso
 
+### Estado dos módulos
+
 ```text
-Day 1 → Cloud Concepts          ✅
-Day 2 → Global Infrastructure   ✅
-Day 3 → IAM                     ✅
-Day 4 → VPC                     ✅
-Day 5 → EC2                     ✅
-Day 6 → S3                      ✅
-Day 7 → RDS                     ✅
-Day 8 → ECR                     ✅
-Day 9 → ECS                     ⬜ Próximo
-Day 10 → SQS                    ⬜
-Day 11 → CloudWatch             ⬜
-Day 12 → Auto Scaling           ⬜
-Day 13 → Final Project          ⬜
+Day 1  → Cloud Concepts          ✅
+Day 2  → Global Infrastructure   ✅
+Day 3  → IAM                     ✅
+Day 4  → VPC                     ✅
+Day 5  → EC2                     ✅
+Day 6  → S3                      ✅
+Day 7  → RDS                     ✅
+Day 8  → ECR                     ✅
+Day 9  → ECS                     ✅
+Day 10 → SQS                     ⬜ Próximo
+Day 11 → CloudWatch              ⬜
+Day 12 → Auto Scaling            ⬜
+Day 13 → Final Project           ⬜
 ```
+
+### Continuidade
+
+Ao iniciar o próximo módulo, seguir a metodologia já definida:
+
+```text
+diagnóstico
+→ correção
+→ explicação
+→ entender
+→ criar
+→ testar
+→ observar
+→ documentar
+→ destruir
+```
+
+Não repetir os módulos concluídos.
+
+Para o Day 10, iniciar pelo diagnóstico de **Amazon SQS** antes da explicação detalhada.

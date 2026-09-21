@@ -26,7 +26,7 @@ The goal of this project is to combine theoretical study with practical experien
 | 06 | S3                            | Hands-on | ✅ Completed |
 | 07 | RDS                           | Hands-on | ✅ Completed |
 | 08 | ECR                           | Hands-on | ✅ Completed |
-| 09 | ECS                           | —        | ⬜ Not started |
+| 09 | ECS                           | Hands-on | ✅ Completed |
 | 10 | SQS                           | —        | ⬜ Not started |
 | 11 | CloudWatch                    | —        | ⬜ Not started |
 | 12 | Auto Scaling                  | —        | ⬜ Not started |
