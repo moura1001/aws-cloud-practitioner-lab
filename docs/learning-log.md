@@ -1628,3 +1628,55 @@ Concluído o estudo e laboratório de **Amazon ECS**, incluindo:
 **Status:** concluído.
 
 ---
+
+## Day 10 — Amazon SQS
+
+**Status:** Concluído ✅
+
+### O que estudei
+
+* Amazon SQS e desacoplamento entre serviços.
+* Comunicação assíncrona e filas como buffer.
+* Ciclo `SendMessage → ReceiveMessage → DeleteMessage`.
+* Visibility Timeout.
+* Entrega at-least-once e necessidade de tolerar mensagens duplicadas.
+* `MessageId` vs. `ReceiptHandle`.
+* SQS Standard vs. FIFO.
+* Long Polling.
+* Integração conceitual entre Producer, SQS e Consumer.
+* IAM least privilege para operações de SQS.
+
+### Hands-on
+
+Criei uma SQS Standard Queue utilizando Terraform com:
+
+* `visibility_timeout_seconds = 30`;
+* `message_retention_seconds = 86400`;
+* `receive_wait_time_seconds = 10`;
+* IAM policy específica para SQS;
+* `depends_on` entre o attachment da policy e a fila.
+
+Testei:
+
+* criação da fila;
+* obtenção da Queue URL;
+* envio de mensagens;
+* recebimento de mensagens;
+* comportamento do Visibility Timeout;
+* recebimentos repetidos;
+* utilização do `ReceiptHandle`;
+* exclusão de mensagens;
+* Long Polling;
+* confirmação de que a mensagem não estava mais disponível após `DeleteMessage`.
+
+### O que ficou mais claro
+
+Antes do laboratório, eu entendia SQS principalmente como uma fila entre serviços. Na prática, ficou mais claro que receber uma mensagem não significa removê-la e que o consumidor precisa confirmar o processamento através do `DeleteMessage`.
+
+Também observei na prática que uma mesma `MessageId` pode aparecer novamente em uma SQS Standard, com outro `ReceiptHandle`, reforçando o conceito de entrega at-least-once e a necessidade de consumidores tolerarem duplicidade.
+
+### Segurança e custos
+
+O laboratório foi executado sem `AdministratorAccess`, utilizando uma policy específica de SQS. A fila foi destruída após os testes com `terraform destroy`.
+
+---

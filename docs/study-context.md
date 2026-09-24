@@ -61,14 +61,14 @@ aws-cloud-practitioner-lab/
 | 05 | EC2                   | Hands-on | ✅ Completed   |
 | 06 | S3                    | Hands-on | ✅ Completed   |
 | 07 | RDS                   | Hands-on | ✅ Completed   |
-| 08 | ECR                   | Hands-on | ✅ Completed |
-| 09 | ECS                   | Hands-on | ⬜ Not started |
-| 10 | SQS                   | Hands-on | ⬜ Not started |
+| 08 | ECR                   | Hands-on | ✅ Completed   |
+| 09 | ECS                   | Hands-on | ✅ Completed   |
+| 10 | SQS                   | Hands-on | ✅ Completed   |
 | 11 | CloudWatch            | Hands-on | ⬜ Not started |
 | 12 | Auto Scaling          | Hands-on | ⬜ Not started |
 | 13 | Final Project         | Hands-on | ⬜ Not started |
 
-**Próximo módulo: Day 9 — ECS.**
+**Próximo módulo: Day 11 — CloudWatch.**
 
 ---
 
@@ -984,7 +984,145 @@ Os recursos temporários do ECS foram destruídos após os testes.
 
 **Estado atual: Day 9 — ECS concluído.**
 
-**Próximo módulo: Day 10 — SQS.**
+---
+
+## 3. Plano dos módulos
+
+| #  | Lab / Topic           | Hands-on | Status        |
+| -- | --------------------- | -------- | ------------- |
+| 01 | Cloud Concepts        | N/A      | ✅ Completed   |
+| 02 | Global Infrastructure | N/A      | ✅ Completed   |
+| 03 | IAM                   | Hands-on | ✅ Completed   |
+| 04 | VPC                   | Hands-on | ✅ Completed   |
+| 05 | EC2                   | Hands-on | ✅ Completed   |
+| 06 | S3                    | Hands-on | ✅ Completed   |
+| 07 | RDS                   | Hands-on | ✅ Completed   |
+| 08 | ECR                   | Hands-on | ✅ Completed   |
+| 09 | ECS                   | Hands-on | ✅ Completed   |
+| 10 | SQS                   | Hands-on | ✅ Completed   |
+| 11 | CloudWatch            | Hands-on | ⬜ Not started |
+| 12 | Auto Scaling          | Hands-on | ⬜ Not started |
+| 13 | Final Project         | Hands-on | ⬜ Not started |
+
+**Próximo módulo: Day 11 — CloudWatch.**
+
+---
+
+### Day 10 — SQS
+
+**Status:** Concluído.
+
+### Principais conceitos estudados
+
+* Amazon SQS;
+* comunicação síncrona x assíncrona;
+* desacoplamento;
+* Producer / Consumer;
+* Queue / Message;
+* ciclo de vida de uma mensagem;
+* `SendMessage`;
+* `ReceiveMessage`;
+* `DeleteMessage`;
+* `ReceiptHandle`;
+* Visibility Timeout;
+* at-least-once delivery;
+* idempotência;
+* Standard Queue;
+* FIFO Queue;
+* Message Retention;
+* Long Polling;
+* Dead-Letter Queue (DLQ);
+* SQS x SNS;
+* integração conceitual com ECS/EC2;
+* IAM e least privilege;
+* custo baseado principalmente em requisições/operações.
+
+### Hands-on realizado
+
+Foi criada uma fila SQS com Terraform:
+
+```text
+aws-cloud-practitioner-lab
+```
+
+Configurações principais:
+
+```text
+Visibility Timeout: 30 segundos
+Message Retention: 24 horas
+Long Polling: 10 segundos
+Region: sa-east-1
+```
+
+Foi criada uma política IAM específica para o laboratório, contendo somente as permissões necessárias para a criação, gerenciamento e utilização da fila.
+
+A criação inicialmente falhou com `AccessDenied` porque o usuário não possuía `sqs:CreateQueue`. Após a criação e associação da política específica de SQS, o Terraform conseguiu criar a fila sem AdministratorAccess.
+
+Foi utilizada uma dependência explícita:
+
+```hcl
+depends_on = [
+  aws_iam_user_policy_attachment.sqs
+]
+```
+
+Isso garantiu que o attachment da política fosse concluído antes da tentativa de criação da fila.
+
+### Testes realizados
+
+Foram realizados testes de:
+
+1. obtenção da Queue URL;
+2. envio de mensagem;
+3. recebimento de mensagem;
+4. observação do `MessageId`;
+5. observação do `ReceiptHandle`;
+6. recebimentos consecutivos para observar a possibilidade de duplicação em Standard Queue;
+7. exclusão da mensagem com `DeleteMessage`;
+8. validação de que a mensagem excluída não estava mais disponível;
+9. teste de Visibility Timeout sem excluir a mensagem;
+10. observação da mensagem voltar a ficar disponível;
+11. observação do Long Polling quando a fila estava vazia.
+
+### Principais aprendizados
+
+```text
+Producer
+    ↓
+SendMessage
+    ↓
+SQS Queue
+    ↓
+ReceiveMessage
+    ↓
+Visibility Timeout
+    ↓
+Processamento
+    ↓
+DeleteMessage
+```
+
+Se o consumidor não excluir a mensagem após o processamento, ela poderá voltar a ficar disponível.
+
+Como o SQS Standard utiliza entrega at-least-once, consumidores devem considerar a possibilidade de mensagens duplicadas e implementar idempotência quando necessário.
+
+### Recursos criados
+
+* `aws_sqs_queue.app`
+* `aws_iam_policy.sqs`
+* `aws_iam_user_policy_attachment.sqs`
+
+### Limpeza
+
+Após os testes, foi executado:
+
+```bash
+terraform destroy
+```
+
+O destroy foi concluído com sucesso.
+
+Não há infraestrutura do laboratório de SQS mantida após a conclusão dos testes.
 
 ---
 
@@ -1196,28 +1334,40 @@ Day 6  → S3                      ✅
 Day 7  → RDS                     ✅
 Day 8  → ECR                     ✅
 Day 9  → ECS                     ✅
-Day 10 → SQS                     ⬜ Próximo
-Day 11 → CloudWatch              ⬜
+Day 10 → SQS                     ✅
+Day 11 → CloudWatch              ⬜ Próximo
 Day 12 → Auto Scaling            ⬜
 Day 13 → Final Project           ⬜
 ```
 
-### Continuidade
+---
 
-Ao iniciar o próximo módulo, seguir a metodologia já definida:
+## Continuidade
+
+O próximo módulo deve ser:
+
+**Day 11 — CloudWatch**
+
+A metodologia continua:
 
 ```text
 diagnóstico
-→ correção
-→ explicação
-→ entender
-→ criar
-→ testar
-→ observar
-→ documentar
-→ destruir
+    ↓
+correção
+    ↓
+explicação
+    ↓
+entender
+    ↓
+criar
+    ↓
+testar
+    ↓
+observar
+    ↓
+documentar
+    ↓
+destruir
 ```
 
-Não repetir os módulos concluídos.
-
-Para o Day 10, iniciar pelo diagnóstico de **Amazon SQS** antes da explicação detalhada.
+O próximo dia deve começar pelo **diagnóstico de CloudWatch**, sem repetir SQS ou os módulos anteriores.
