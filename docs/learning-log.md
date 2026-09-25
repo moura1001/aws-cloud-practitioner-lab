@@ -1680,3 +1680,46 @@ Também observei na prática que uma mesma `MessageId` pode aparecer novamente e
 O laboratório foi executado sem `AdministratorAccess`, utilizando uma policy específica de SQS. A fila foi destruída após os testes com `terraform destroy`.
 
 ---
+
+## Day 11 — CloudWatch
+
+**Status:** Concluído
+
+### O que aprendi
+
+* CloudWatch é um serviço de monitoramento e observabilidade da AWS.
+* Métricas são dados numéricos organizados ao longo do tempo; estatísticas como `Average`, `Minimum` e `Maximum` são aplicadas aos dados das métricas.
+* Os CloudWatch Logs utilizam a estrutura Log Group → Log Stream → Log Events.
+* O EC2 fornece métricas padrão como utilização de CPU, enquanto o monitoramento de memória geralmente requer o CloudWatch Agent.
+* CloudWatch Alarms podem assumir os estados `OK`, `ALARM` e `INSUFFICIENT_DATA`.
+* O SQS disponibiliza métricas como `ApproximateNumberOfMessagesVisible` para o CloudWatch.
+* CloudWatch, CloudTrail e EventBridge possuem finalidades diferentes.
+* O CloudWatch pode fornecer informações de monitoramento utilizadas por mecanismos de automação, como Auto Scaling.
+
+### Hands-on
+
+Criei uma fila SQS e um CloudWatch Alarm utilizando Terraform e permissões IAM de least privilege.
+
+Foi observado o ciclo completo do alarm:
+
+```text
+INSUFFICIENT_DATA → OK → ALARM → OK
+```
+
+O alarm foi acionado quando uma mensagem permaneceu disponível na fila e retornou para `OK` após a mensagem ser consumida e excluída.
+
+Durante o laboratório, o Terraform exigiu a permissão `cloudwatch:ListTagsForResource`, que foi adicionada especificamente à policy do CloudWatch.
+
+Também foi identificada a diferença entre a métrica do CloudWatch `ApproximateNumberOfMessagesVisible` e o atributo da API do SQS `ApproximateNumberOfMessages`.
+
+### Limpeza
+
+Executado:
+
+```bash
+terraform destroy
+```
+
+Os recursos do laboratório foram destruídos com sucesso.
+
+---

@@ -28,7 +28,7 @@ The goal of this project is to combine theoretical study with practical experien
 | 08 | ECR                           | Hands-on | ✅ Completed |
 | 09 | ECS                           | Hands-on | ✅ Completed |
 | 10 | SQS                           | Hands-on | ✅ Completed |
-| 11 | CloudWatch                    | —        | ⬜ Not started |
+| 11 | CloudWatch                    | Hands-on | ✅ Completed |
 | 12 | Auto Scaling                  | —        | ⬜ Not started |
 | 13 | Final Project                 | —        | ⬜ Not started |
 

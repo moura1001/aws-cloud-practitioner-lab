@@ -64,11 +64,11 @@ aws-cloud-practitioner-lab/
 | 08 | ECR                   | Hands-on | ✅ Completed   |
 | 09 | ECS                   | Hands-on | ✅ Completed   |
 | 10 | SQS                   | Hands-on | ✅ Completed   |
-| 11 | CloudWatch            | Hands-on | ⬜ Not started |
+| 11 | CloudWatch            | Hands-on | ✅ Completed   |
 | 12 | Auto Scaling          | Hands-on | ⬜ Not started |
 | 13 | Final Project         | Hands-on | ⬜ Not started |
 
-**Próximo módulo: Day 11 — CloudWatch.**
+**Próximo módulo: Day 12 — Auto Scaling.**
 
 ---
 
@@ -1000,11 +1000,11 @@ Os recursos temporários do ECS foram destruídos após os testes.
 | 08 | ECR                   | Hands-on | ✅ Completed   |
 | 09 | ECS                   | Hands-on | ✅ Completed   |
 | 10 | SQS                   | Hands-on | ✅ Completed   |
-| 11 | CloudWatch            | Hands-on | ⬜ Not started |
+| 11 | CloudWatch            | Hands-on | ✅ Completed   |
 | 12 | Auto Scaling          | Hands-on | ⬜ Not started |
 | 13 | Final Project         | Hands-on | ⬜ Not started |
 
-**Próximo módulo: Day 11 — CloudWatch.**
+**Próximo módulo: Day 12 — Auto Scaling.**
 
 ---
 
@@ -1123,6 +1123,51 @@ terraform destroy
 O destroy foi concluído com sucesso.
 
 Não há infraestrutura do laboratório de SQS mantida após a conclusão dos testes.
+
+---
+
+### Day 11 — CloudWatch
+
+**Status:** Concluído
+
+**Tópicos estudados:**
+
+* Visão geral e observabilidade com CloudWatch
+* Métricas
+* Estatísticas
+* Períodos
+* Dimensões
+* CloudWatch Logs
+* Log Group / Log Stream / Log Event
+* CloudWatch Agent
+* Logs Insights
+* CloudWatch Alarms
+* Estados dos alarms: `OK`, `ALARM`, `INSUFFICIENT_DATA`
+* Integração entre SQS e CloudWatch
+* CloudWatch vs. CloudTrail vs. EventBridge
+* CloudWatch vs. Auto Scaling
+* Noções de custos do CloudWatch
+
+**Hands-on:**
+
+* Criada a fila SQS `aws-cloud-practitioner-lab-cloudwatch`
+* Criado o CloudWatch Alarm `aws-cloud-practitioner-lab-sqs-messages`
+* Métrica: `AWS/SQS / ApproximateNumberOfMessagesVisible`
+* Estatística: `Maximum`
+* Período: `60 seconds`
+* Períodos de avaliação: `1`
+* Threshold: `1`
+* Comparação: `GreaterThanOrEqualToThreshold`
+* Tratamento de dados ausentes: `notBreaching`
+* Utilizada policy IAM seguindo least privilege
+* Adicionada a permissão `cloudwatch:ListTagsForResource` após o Terraform retornar `AccessDenied` inicialmente
+* Observado o ciclo do alarm: `INSUFFICIENT_DATA → OK → ALARM → OK`
+* Verificado que a mudança de estado do alarm não é necessariamente imediata, pois existe latência na publicação e avaliação das métricas
+* Identificada a diferença entre a métrica do CloudWatch `ApproximateNumberOfMessagesVisible` e o atributo da API do SQS `ApproximateNumberOfMessages`
+* Executado `terraform destroy` com sucesso
+
+**Principal aprendizado:**
+O CloudWatch fornece monitoramento e observabilidade, enquanto outros serviços podem utilizar seus sinais para executar ações. Um CloudWatch Alarm avalia os dados de uma métrica de acordo com condições configuradas e altera seu estado conforme os valores observados.
 
 ---
 
@@ -1335,8 +1380,8 @@ Day 7  → RDS                     ✅
 Day 8  → ECR                     ✅
 Day 9  → ECS                     ✅
 Day 10 → SQS                     ✅
-Day 11 → CloudWatch              ⬜ Próximo
-Day 12 → Auto Scaling            ⬜
+Day 11 → CloudWatch              ✅
+Day 12 → Auto Scaling            ⬜ Próximo
 Day 13 → Final Project           ⬜
 ```
 
@@ -1346,7 +1391,7 @@ Day 13 → Final Project           ⬜
 
 O próximo módulo deve ser:
 
-**Day 11 — CloudWatch**
+**Day 12 — Auto Scaling**
 
 A metodologia continua:
 
@@ -1370,4 +1415,4 @@ documentar
 destruir
 ```
 
-O próximo dia deve começar pelo **diagnóstico de CloudWatch**, sem repetir SQS ou os módulos anteriores.
+O próximo dia deve começar pelo **diagnóstico de Auto Scaling**, sem repetir CloudWatch ou os módulos anteriores.
