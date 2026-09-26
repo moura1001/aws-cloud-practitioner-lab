@@ -65,96 +65,132 @@ aws-cloud-practitioner-lab/
 | 09 | ECS                   | Hands-on | ✅ Completed   |
 | 10 | SQS                   | Hands-on | ✅ Completed   |
 | 11 | CloudWatch            | Hands-on | ✅ Completed   |
-| 12 | Auto Scaling          | Hands-on | ⬜ Not started |
+| 12 | Auto Scaling          | Hands-on | ✅ Completed   |
 | 13 | Final Project         | Hands-on | ⬜ Not started |
 
-**Próximo módulo: Day 12 — Auto Scaling.**
+**Próximo módulo: Day 13 — Final Project.**
 
 ---
 
-## 4. Metodologia das aulas
+## 4. Metodologia obrigatória
 
-Cada dia de estudo deve seguir, preferencialmente, esta ordem:
+Cada módulo deve seguir:
 
-### Etapa 1 — Perguntas / diagnóstico
+```text
+diagnóstico
+    ↓
+correção
+    ↓
+explicação
+    ↓
+entender
+    ↓
+criar
+    ↓
+testar
+    ↓
+observar
+    ↓
+documentar
+    ↓
+destruir
+```
 
-Antes do conteúdo detalhado, apresentar algumas perguntas sobre o assunto do dia.
+### Diagnóstico
 
-Objetivos:
+Antes do conteúdo detalhado, apresentar perguntas sobre o assunto.
 
-* descobrir o conhecimento prévio;
-* estimular raciocínio antes da explicação;
-* identificar conceitos que precisam de maior atenção;
-* aproximar o estudo do formato da prova CLF-C02.
+O usuário responde sem pesquisar, mesmo que não tenha certeza.
 
-As perguntas devem ser respondidas pelo aluno antes da explicação completa.
+Não corrigir ou explicar antes de receber as respostas.
 
-Depois das respostas:
+### Correção
 
-1. corrigir cada questão;
-2. indicar o que estava correto;
-3. corrigir eventuais erros;
-4. explicar o motivo;
-5. destacar conceitos importantes para a prova.
+Para cada resposta:
 
-Não entregar simplesmente o gabarito sem explicação.
+* reproduzir a resposta original utilizando `Minha resposta:`;
+* indicar o que estava correto, parcialmente correto ou incorreto;
+* explicar o motivo;
+* destacar possíveis pegadinhas da CLF-C02.
 
----
+Não substituir a resposta original por uma resposta melhorada.
 
-### Etapa 2 — Explicação dos conceitos
+### Explicação
 
-Depois das perguntas, explicar os conceitos necessários para compreender o tema.
+Depois do diagnóstico:
 
-A explicação deve ser:
+* explicar os conceitos necessários;
+* relacionar com módulos anteriores quando houver conexão;
+* priorizar o entendimento do "por quê";
+* evitar simplificações que eliminem conceitos importantes.
 
-* didática;
-* progressiva;
-* prática;
-* relacionada à AWS;
-* relacionada à prova CLF-C02;
-* suficientemente detalhada para criar entendimento real.
+### Hands-on
 
-Evitar explicações excessivamente acadêmicas ou longas quando uma analogia ou exemplo simples resolver.
-
-Sempre que possível, estabelecer relações entre os serviços e conceitos já estudados.
-
----
-
-### Etapa 3 — Hands-on
-
-Quando o assunto permitir, realizar uma prática na AWS e/ou Terraform.
-
-A abordagem deve ser incremental:
+Utilizar:
 
 ```text
 entender → criar → testar → observar → documentar → destruir
 ```
 
-O aluno deve entender o motivo de cada comando e recurso criado.
+Utilizar Terraform quando fizer sentido.
 
-Antes de criar recursos que possam gerar cobrança, explicar:
+Antes de criar recursos potencialmente cobrados, explicar o custo e como removê-los.
 
-* se existe custo;
-* qual é o risco;
-* como verificar;
-* como remover o recurso.
+### Documentação
+
+Cada módulo deve possuir:
+
+```text
+README.md
+```
+
+O README deve registrar:
+
+* objetivo;
+* diagnóstico completo;
+* respostas originais;
+* correções;
+* assuntos teóricos;
+* conceitos estudados;
+* arquitetura;
+* implementação;
+* validação;
+* custos;
+* pontos de atenção para CLF-C02;
+* cleanup;
+* conclusão/status.
+
+`docs/learning-log.md` deve receber um resumo conciso, sem simplesmente copiar o README.
+
+`docs/study-context.md` deve registrar o estado atual e as informações necessárias para continuar em outro chat.
+
+### Continuidade
+
+Antes de iniciar um novo módulo:
+
+* utilizar `docs/study-context.md`;
+* utilizar `docs/learning-log.md`;
+* não repetir módulos concluídos;
+* não inferir informações ausentes;
+* perguntar antes de prosseguir se houver dúvida sobre como um módulo anterior foi conduzido;
+* preservar as respostas originais do usuário nos READMEs.
 
 ---
 
-## 5. Regra de segurança de custos
+## 5. Controle de custos
 
 O laboratório utiliza uma conta AWS pessoal.
 
-Portanto, **controle de custos é prioridade**.
+**Controle de custos é prioridade.**
 
-Sempre:
+Regras:
 
-* preferir recursos gratuitos quando suficientes para o aprendizado;
+* preferir recursos gratuitos quando suficientes;
 * evitar recursos pagos desnecessários;
-* explicar custos antes de criar recursos potencialmente cobrados;
-* usar uma única região, atualmente `sa-east-1`;
-* destruir recursos temporários ao terminar o laboratório;
-* nunca deixar recursos pagos ativos sem necessidade.
+* explicar custos antes da criação;
+* utilizar somente `sa-east-1`;
+* destruir recursos temporários;
+* não deixar recursos pagos ativos sem necessidade.
 
 Regra prática:
 
@@ -162,91 +198,27 @@ Regra prática:
 create → test → document → destroy
 ```
 
-Quando um recurso precisar permanecer para um módulo futuro, explicar explicitamente por quê.
+NAT Gateway não foi utilizado nos módulos anteriores devido ao custo.
 
 ---
 
 ## 6. Terraform
 
-Terraform deve ser utilizado sempre que fizer sentido para o laboratório.
-
 Princípios:
 
 * infraestrutura como código;
 * configuração versionada no Git;
-* evitar credenciais hardcoded;
-* utilizar as credenciais configuradas no ambiente AWS CLI;
-* nunca colocar Access Key ou Secret Access Key no repositório;
-* manter `.terraform/`, `terraform.tfstate` e arquivos de variáveis sensíveis fora do Git.
-
-O aluno utiliza AWS CLI localmente para autenticação.
-
-Os módulos devem evitar hardcode de IDs de infraestrutura existente quando for possível descobrir os recursos através de tags ou outros mecanismos do Terraform.
-
-## Metodologia obrigatória de cada módulo
-
-Cada módulo de estudo deve seguir a mesma sequência:
-
-1. **Diagnóstico inicial**
-
-   * Antes de qualquer explicação, apresentar perguntas de diagnóstico.
-   * O usuário responde sem pesquisar, mesmo que não tenha certeza.
-   * Não corrigir ou explicar antes de receber as respostas.
-
-2. **Correção do diagnóstico**
-
-   * Reproduzir a resposta original do usuário utilizando o formato:
-     **Minha resposta:**
-   * Avaliar cada resposta individualmente.
-   * Indicar o que estava correto, parcialmente correto ou incorreto.
-   * Explicar a correção e destacar possíveis pegadinhas da CLF-C02.
-   * Não substituir a resposta original por uma resposta "melhorada".
-
-3. **Explicação**
-
-   * Somente depois do diagnóstico e das correções, explicar os conceitos do módulo.
-   * Relacionar os conceitos novos com módulos anteriores quando houver conexão relevante.
-   * Priorizar o entendimento do "por quê" antes dos comandos.
-
-4. **Hands-on**
-
-   * Seguir o fluxo:
-     **entender → criar → testar → observar → documentar → destruir**
-   * Utilizar Terraform quando fizer sentido para o laboratório.
-   * Aplicar least privilege nas permissões IAM.
-   * Considerar custos antes da criação de recursos potencialmente cobrados.
-
-5. **Documentação**
-
-   * Cada módulo deve possuir seu próprio `README.md`.
-   * O README deve registrar:
-
-     * objetivo;
-     * diagnóstico completo;
-     * respostas originais do usuário;
-     * correções;
-     * conceitos estudados;
-     * arquitetura;
-     * implementação;
-     * validação;
-     * controle de custos;
-     * pontos de atenção para CLF-C02;
-     * conclusão/status.
-   * `docs/learning-log.md` deve receber um resumo conciso do módulo, sem simplesmente copiar o README.
-   * `docs/study-context.md` deve registrar o estado atual do curso e informações necessárias para continuar em outro chat.
-
-6. **Continuidade entre chats**
-
-   * Antes de iniciar um novo módulo, utilizar `docs/study-context.md` e `docs/learning-log.md` como fonte de contexto.
-   * Não inferir informações que não estejam nesses arquivos ou no contexto atual.
-   * Se houver dúvida sobre como um módulo anterior foi conduzido, **perguntar antes de prosseguir**.
-   * Preservar as respostas originais do usuário nos READMEs dos módulos.
+* não utilizar credenciais hardcoded;
+* utilizar as credenciais configuradas no AWS CLI;
+* não colocar Access Key ou Secret Access Key no repositório;
+* manter `.terraform/`, `terraform.tfstate` e arquivos sensíveis fora do Git;
+* evitar hardcode de IDs de infraestrutura existente quando data sources puderem descobri-los.
 
 ---
 
 ## 7. Segurança
 
-Nunca solicitar ao aluno:
+Nunca solicitar:
 
 * Access Key;
 * Secret Access Key;
@@ -255,186 +227,15 @@ Nunca solicitar ao aluno:
 * credenciais;
 * dados sensíveis.
 
-Quando for necessário mostrar uma saída que contenha informações sensíveis, utilizar placeholders.
+Quando uma saída possuir informações sensíveis, utilizar placeholders.
 
 ---
 
-## 8. Documentação de cada módulo
+# 8. Estado atual do curso
 
-Cada módulo deve possuir seu próprio:
+## Day 1 — Cloud Concepts
 
-```text
-README.md
-```
-
-O README deve registrar, conforme aplicável:
-
-* objetivo;
-* conceitos estudados;
-* comandos;
-* recursos criados;
-* testes realizados;
-* resultados;
-* conceitos importantes para a CLF-C02;
-* limpeza dos recursos;
-* conclusão.
-
----
-
-## 9. Learning Log
-
-Ao finalizar cada dia, atualizar:
-
-```text
-docs/learning-log.md
-```
-
-O registro deve conter:
-
-* dia/módulo;
-* conteúdos estudados;
-* principais aprendizados;
-* hands-on realizado;
-* resultados dos testes;
-* conceitos importantes;
-* recursos criados;
-* informações relevantes de custo;
-* checklist de conclusão.
-
-O learning log deve ser um histórico conciso, não uma cópia integral do README do módulo.
-
----
-
-## 10. Git
-
-Após concluir um módulo:
-
-1. verificar `git status`;
-2. verificar se não existem credenciais ou arquivos sensíveis;
-3. revisar as alterações;
-4. fazer commit com mensagem clara;
-5. enviar para o GitHub.
-
-Padrão:
-
-```text
-tipo: descrição curta em inglês
-```
-
-Tipos utilizados:
-
-* `docs:` → documentação, anotações, atualização de status e learning log;
-* `feat:` → implementação de novos recursos ou infraestrutura do laboratório.
-
-Não criar commits duplicados sem necessidade.
-
-Antes de novos commits:
-
-```bash
-git status
-git log --oneline --decorate -n 10
-```
-
----
-
-## 11. Relação entre os módulos
-
-O curso deve ser progressivo.
-
-Não tratar cada serviço como um assunto completamente isolado.
-
-A ideia é construir gradualmente a arquitetura final.
-
-Arquitetura planejada:
-
-```text
-Internet
-
-   ↓
-
-ALB
-
-   ↓
-
-ECS / Fargate
-
-   ├── SQS
-   │
-   └── RDS
-
-        ↓
-
-CloudWatch
-
-Docker → ECR → ECS
-```
-
-A relação entre os serviços deve ser apresentada conforme eles forem estudados.
-
-Exemplos:
-
-```text
-IAM Role
-    ↓
-EC2
-
-ECR
-    ↓
-ECS
-
-VPC / Private Subnets
-    ↓
-RDS
-
-ECS
-    ↓
-SQS
-
-ECS / RDS / SQS
-    ↓
-CloudWatch
-```
-
----
-
-## 12. Como iniciar um novo dia
-
-Quando o aluno disser algo como:
-
-> "Vamos continuar"
-
-ou:
-
-> "Podemos fazer o próximo dia?"
-
-Deve-se:
-
-1. consultar o estado atual do plano;
-2. identificar o último módulo concluído;
-3. iniciar o próximo módulo;
-4. não repetir módulos já concluídos sem necessidade;
-5. começar pelas perguntas;
-6. depois explicar/corrigir;
-7. realizar o hands-on;
-8. produzir as anotações;
-9. atualizar o README;
-10. atualizar o `docs/learning-log.md`;
-11. atualizar a tabela de Labs;
-12. indicar claramente o próximo módulo.
-
-**Estado atual: Day 8 — ECR concluído.**
-
-O próximo módulo é:
-
-**Day 9 — ECS.**
-
----
-
-## 13. Estado atual do curso
-
-### Day 1 — Cloud Concepts
-
-Concluído.
+**Concluído.**
 
 Principais conceitos:
 
@@ -451,9 +252,9 @@ Principais conceitos:
 
 ---
 
-### Day 2 — Global Infrastructure
+## Day 2 — Global Infrastructure
 
-Concluído.
+**Concluído.**
 
 Principais conceitos:
 
@@ -471,9 +272,9 @@ Principais conceitos:
 
 ---
 
-### Day 3 — IAM
+## Day 3 — IAM
 
-Concluído.
+**Concluído.**
 
 Principais conceitos:
 
@@ -493,23 +294,21 @@ Hands-on:
 
 * criação do IAM User `aws-cloud-practitioner-lab`;
 * configuração do AWS CLI;
-* utilização do Terraform;
-* criação de policy de Least Privilege;
-* teste de `AccessDenied`;
+* criação de policies de Least Privilege;
+* testes de `AccessDenied`;
 * criação da Role `aws-cloud-practitioner-lab-ec2-s3-read`;
 * configuração de `AmazonS3ReadOnlyAccess`;
-* validação da Trust Policy;
-* validação da Permissions Policy.
+* validação de Trust Policy e Permissions Policy.
 
-A Role permanece para utilização no módulo de EC2.
+A Role permanece para utilização em workloads AWS.
 
 ---
 
-### Day 4 — VPC
+## Day 4 — VPC
 
-Concluído.
+**Concluído.**
 
-Infraestrutura principal:
+Infraestrutura:
 
 ```text
 VPC:
@@ -541,9 +340,9 @@ NAT Gateway não foi criado devido ao custo.
 
 ---
 
-### Day 5 — EC2
+## Day 5 — EC2
 
-Concluído.
+**Concluído.**
 
 Foram estudados:
 
@@ -573,19 +372,13 @@ Subnet: public-a
 EBS: gp3 / 2 GiB
 ```
 
-A EC2 utilizou a Role:
-
-```text
-aws-cloud-practitioner-lab-ec2-s3-read
-```
-
 Os recursos temporários foram destruídos.
 
 ---
 
-### Day 6 — S3
+## Day 6 — S3
 
-Concluído.
+**Concluído.**
 
 Foram estudados:
 
@@ -616,9 +409,9 @@ Hands-on:
 * recuperação de versão;
 * cleanup automático com `force_destroy`.
 
-O bucket e seus objetos foram destruídos com sucesso.
+O bucket e os objetos foram destruídos.
 
-Policy utilizada:
+Policy:
 
 ```text
 aws-cloud-practitioner-lab-s3
@@ -626,9 +419,9 @@ aws-cloud-practitioner-lab-s3
 
 ---
 
-### Day 7 — RDS
+## Day 7 — RDS
 
-Concluído.
+**Concluído.**
 
 Foram estudados:
 
@@ -646,7 +439,7 @@ Foram estudados:
 * Service-Linked Role;
 * Least Privilege.
 
-Hands-on realizado:
+Hands-on:
 
 ```text
 Engine: MySQL
@@ -658,105 +451,60 @@ Multi-AZ: false
 Port: 3306
 ```
 
-O RDS utilizou as subnets privadas existentes:
+Utilizadas as subnets privadas existentes:
 
 ```text
 private-a → subnet-0117c0db343d98f9b
 private-b → subnet-0e85409ac28b247d6
 ```
 
-A VPC utilizada foi:
+VPC:
 
 ```text
 vpc-09902363bc6acf897
 ```
 
-Foi criado um Security Group específico para o RDS.
-
-Na validação final:
-
-```text
-Ingress: []
-Egress: []
-```
-
-Portanto, nenhuma conexão de entrada foi autorizada.
-
-### Problema de IAM encontrado
-
-A primeira tentativa de criação do RDS falhou por ausência de:
+A policy `aws-cloud-practitioner-lab-rds` precisou de:
 
 ```text
 iam:CreateServiceLinkedRole
 ```
 
-A policy `aws-cloud-practitioner-lab-rds` foi ajustada para permitir a criação da Service-Linked Role específica do RDS.
+para criação da Service-Linked Role específica do RDS.
 
-Após o ajuste, o RDS foi criado com sucesso.
-
-A Role `AWSServiceRoleForRDS` foi validada.
-
-### Validação final
-
-O RDS ficou:
-
-```text
-Status: available
-```
-
-E foi confirmado utilizando AWS CLI:
-
-```text
-VPC:
-vpc-09902363bc6acf897
-
-Subnets:
-subnet-0e85409ac28b247d6
-subnet-0117c0db343d98f9b
-
-Security Group:
-sg-0a5083136ae021200
-
-PubliclyAccessible:
-false
-
-MultiAZ:
-false
-
-Port:
-3306
-```
-
-Após os testes, o RDS foi destruído com sucesso.
-
-O Terraform State permaneceu somente com:
-
-```text
-aws_iam_policy.rds
-aws_iam_user_policy_attachment.rds
-```
-
-A policy IAM permanece para o módulo.
+O RDS foi destruído após os testes.
 
 ---
 
-### Day 8 — ECR
+## Day 8 — ECR
 
-Concluído.
+**Concluído.**
 
 Foram estudados:
 
-* ECR como Container Registry;
+* ECR;
 * Docker Image x Container;
 * Registry x Repository;
 * Image Tag;
 * Image Digest;
 * Push x Pull;
 * ECR x ECS;
-* ECR x VPC;
-* IAM e Least Privilege.
+* IAM;
+* Least Privilege.
 
-Hands-on realizado:
+Repository:
+
+```text
+aws-cloud-practitioner-lab
+```
+
+Tag:
+
+```text
+1.0
+```
+
+Foi realizado:
 
 ```text
 Docker Image
@@ -770,95 +518,25 @@ ECR
 docker pull
 ```
 
-Foi criado o repository:
-
-```text
-aws-cloud-practitioner-lab
-```
-
-na região:
-
-```text
-sa-east-1
-```
-
-Foi criada e anexada ao usuário a policy:
-
-```text
-aws-cloud-practitioner-lab-ecr
-```
-
-A imagem Docker recebeu a tag:
-
-```text
-1.0
-```
-
-e foi enviada ao ECR.
-
-A imagem foi validada utilizando AWS CLI através de:
+A imagem foi validada com:
 
 ```bash
 aws ecr describe-images
 ```
 
-Depois foi removida do ambiente Docker local e recuperada novamente utilizando `docker pull`, demonstrando o fluxo de armazenamento e distribuição do ECR.
+Durante o cleanup, foi necessário remover as imagens antes de destruir o repository.
 
-### Cleanup
-
-Durante o cleanup, o repository inicialmente não pôde ser destruído porque ainda continha imagens.
-
-Após a remoção necessária das imagens, o repository foi destruído com sucesso.
-
-Também foi identificado durante o cleanup que a policy do usuário precisava da permissão:
-
-```text
-iam:DetachUserPolicy
-```
-
-para que o Terraform pudesse remover sua associação.
-
-Isso reforçou a diferença entre as permissões necessárias para criação e destruição de recursos.
-
-### Estado final
-
-Os recursos temporários do ECR foram destruídos.
-
-A policy:
-
-```text
-aws-cloud-practitioner-lab-ecr
-```
-
-permanece associada ao usuário para o contexto do laboratório, conforme o padrão adotado nos módulos anteriores.
-
-### Relação com os próximos módulos
-
-O principal modelo mental consolidado foi:
-
-```text
-Docker
-   ↓
-ECR
-   ↓
-ECS
-   ↓
-Container
-```
-
-O próximo módulo utilizará esse conhecimento para estudar o **Amazon ECS**, responsável pelo gerenciamento da execução dos containers.
-
-**Day 8 — ECR: concluído.**
+Os recursos temporários foram destruídos.
 
 ---
 
-### Day 9 — ECS
+## Day 9 — ECS
 
-Concluído.
+**Concluído.**
 
 Foram estudados:
 
-* ECS como serviço de orquestração de containers;
+* ECS;
 * ECS Cluster;
 * Task Definition;
 * Task;
@@ -872,23 +550,7 @@ Foram estudados:
 * desired count;
 * substituição automática de Tasks.
 
-Hands-on realizado com Terraform:
-
-```text
-ECR
- ↓
-ECS Cluster
- ↓
-ECS Service
- ↓
-Fargate Task
- ↓
-Container
- ↓
-CloudWatch Logs
-```
-
-Configuração principal:
+Configuração:
 
 ```text
 Cluster:
@@ -916,110 +578,44 @@ Log Group:
 /aws/ecs/aws-cloud-practitioner-lab
 ```
 
-A imagem utilizada foi:
+Imagem:
 
 ```text
 aws-cloud-practitioner-lab:1.0
 ```
 
-proveniente do ECR utilizado no Day 8.
+Foi validada uma Task `RUNNING`.
 
-### Validações realizadas
-
-O ECS Service foi validado com uma Task em estado `RUNNING`.
-
-Os logs do container foram recuperados pelo CloudWatch Logs e demonstraram a inicialização do Nginx.
-
-Uma Task foi interrompida manualmente utilizando AWS CLI. O ECS Service iniciou automaticamente uma nova Task para manter:
+Uma Task foi interrompida manualmente e o ECS criou outra para manter:
 
 ```text
 desired_count = 1
 ```
 
-O Terraform também foi validado após o teste:
-
-```text
-No changes.
-Your infrastructure matches the configuration.
-```
-
-### Problemas de IAM encontrados
-
-A criação do ECS Service inicialmente exigiu:
+Foram necessárias permissões adicionais durante o estudo, incluindo:
 
 ```text
 iam:CreateServiceLinkedRole
-```
-
-A policy `aws-cloud-practitioner-lab-ecs` foi ajustada para permitir a criação da Service-Linked Role específica do ECS.
-
-Para observação dos logs foi necessário:
-
-```text
 logs:DescribeLogStreams
-```
-
-Durante o cleanup também foram identificadas permissões adicionais necessárias para operações de destruição, incluindo:
-
-```text
 iam:ListInstanceProfilesForRole
 iam:DetachUserPolicy
 ```
 
-Esses problemas reforçaram o princípio de que as permissões necessárias para criar, observar e destruir recursos podem ser diferentes.
-
-### Controle de custos
-
-Foi utilizada uma única Fargate Task com CPU `256` e memória `512`.
-
-Foi utilizada retenção de logs de 1 dia.
-
-Não foram utilizados:
-
-* NAT Gateway;
-* Load Balancer;
-* EC2 dedicada para o ECS.
-
-Os recursos temporários do ECS foram destruídos após os testes.
-
-**Estado atual: Day 9 — ECS concluído.**
+Os recursos temporários foram destruídos.
 
 ---
 
-## 3. Plano dos módulos
+## Day 10 — SQS
 
-| #  | Lab / Topic           | Hands-on | Status        |
-| -- | --------------------- | -------- | ------------- |
-| 01 | Cloud Concepts        | N/A      | ✅ Completed   |
-| 02 | Global Infrastructure | N/A      | ✅ Completed   |
-| 03 | IAM                   | Hands-on | ✅ Completed   |
-| 04 | VPC                   | Hands-on | ✅ Completed   |
-| 05 | EC2                   | Hands-on | ✅ Completed   |
-| 06 | S3                    | Hands-on | ✅ Completed   |
-| 07 | RDS                   | Hands-on | ✅ Completed   |
-| 08 | ECR                   | Hands-on | ✅ Completed   |
-| 09 | ECS                   | Hands-on | ✅ Completed   |
-| 10 | SQS                   | Hands-on | ✅ Completed   |
-| 11 | CloudWatch            | Hands-on | ✅ Completed   |
-| 12 | Auto Scaling          | Hands-on | ⬜ Not started |
-| 13 | Final Project         | Hands-on | ⬜ Not started |
+**Concluído.**
 
-**Próximo módulo: Day 12 — Auto Scaling.**
-
----
-
-### Day 10 — SQS
-
-**Status:** Concluído.
-
-### Principais conceitos estudados
+Principais conceitos:
 
 * Amazon SQS;
 * comunicação síncrona x assíncrona;
 * desacoplamento;
 * Producer / Consumer;
 * Queue / Message;
-* ciclo de vida de uma mensagem;
 * `SendMessage`;
 * `ReceiveMessage`;
 * `DeleteMessage`;
@@ -1031,34 +627,38 @@ Os recursos temporários do ECS foram destruídos após os testes.
 * FIFO Queue;
 * Message Retention;
 * Long Polling;
-* Dead-Letter Queue (DLQ);
+* Dead-Letter Queue;
 * SQS x SNS;
-* integração conceitual com ECS/EC2;
-* IAM e least privilege;
-* custo baseado principalmente em requisições/operações.
+* integração com ECS/EC2;
+* IAM;
+* Least Privilege.
 
-### Hands-on realizado
-
-Foi criada uma fila SQS com Terraform:
+Hands-on:
 
 ```text
+Queue:
 aws-cloud-practitioner-lab
+
+Visibility Timeout:
+30 segundos
+
+Message Retention:
+24 horas
+
+Long Polling:
+10 segundos
+
+Region:
+sa-east-1
 ```
 
-Configurações principais:
+A criação inicialmente falhou por ausência de:
 
 ```text
-Visibility Timeout: 30 segundos
-Message Retention: 24 horas
-Long Polling: 10 segundos
-Region: sa-east-1
+sqs:CreateQueue
 ```
 
-Foi criada uma política IAM específica para o laboratório, contendo somente as permissões necessárias para a criação, gerenciamento e utilização da fila.
-
-A criação inicialmente falhou com `AccessDenied` porque o usuário não possuía `sqs:CreateQueue`. Após a criação e associação da política específica de SQS, o Terraform conseguiu criar a fila sem AdministratorAccess.
-
-Foi utilizada uma dependência explícita:
+Foi criada uma policy específica de SQS e utilizado:
 
 ```hcl
 depends_on = [
@@ -1066,182 +666,514 @@ depends_on = [
 ]
 ```
 
-Isso garantiu que o attachment da política fosse concluído antes da tentativa de criação da fila.
+para garantir que o attachment estivesse concluído antes da criação da fila.
 
-### Testes realizados
+Foram testados:
 
-Foram realizados testes de:
+* envio;
+* recebimento;
+* `MessageId`;
+* `ReceiptHandle`;
+* Visibility Timeout;
+* DeleteMessage;
+* Long Polling;
+* comportamento de Standard Queue;
+* possibilidade de duplicação;
+* idempotência.
 
-1. obtenção da Queue URL;
-2. envio de mensagem;
-3. recebimento de mensagem;
-4. observação do `MessageId`;
-5. observação do `ReceiptHandle`;
-6. recebimentos consecutivos para observar a possibilidade de duplicação em Standard Queue;
-7. exclusão da mensagem com `DeleteMessage`;
-8. validação de que a mensagem excluída não estava mais disponível;
-9. teste de Visibility Timeout sem excluir a mensagem;
-10. observação da mensagem voltar a ficar disponível;
-11. observação do Long Polling quando a fila estava vazia.
+O destroy foi concluído com sucesso.
 
-### Principais aprendizados
+---
+
+## Day 11 — CloudWatch
+
+**Concluído.**
+
+Principais conceitos:
+
+* CloudWatch;
+* métricas;
+* estatísticas;
+* períodos;
+* dimensões;
+* CloudWatch Logs;
+* Log Group;
+* Log Stream;
+* Log Event;
+* CloudWatch Agent;
+* Logs Insights;
+* CloudWatch Alarms;
+* `OK`;
+* `ALARM`;
+* `INSUFFICIENT_DATA`;
+* CloudWatch vs CloudTrail vs EventBridge;
+* CloudWatch vs Auto Scaling;
+* custos.
+
+Hands-on:
 
 ```text
-Producer
-    ↓
-SendMessage
-    ↓
-SQS Queue
-    ↓
-ReceiveMessage
-    ↓
-Visibility Timeout
-    ↓
-Processamento
-    ↓
-DeleteMessage
+SQS Queue:
+aws-cloud-practitioner-lab-cloudwatch
+
+Alarm:
+aws-cloud-practitioner-lab-sqs-messages
+
+Metric:
+AWS/SQS / ApproximateNumberOfMessagesVisible
+
+Statistic:
+Maximum
+
+Period:
+60 seconds
+
+Evaluation Periods:
+1
+
+Threshold:
+1
+
+Comparison:
+GreaterThanOrEqualToThreshold
+
+Missing Data:
+notBreaching
 ```
 
-Se o consumidor não excluir a mensagem após o processamento, ela poderá voltar a ficar disponível.
+Durante a implementação foi necessário adicionar:
 
-Como o SQS Standard utiliza entrega at-least-once, consumidores devem considerar a possibilidade de mensagens duplicadas e implementar idempotência quando necessário.
+```text
+cloudwatch:ListTagsForResource
+```
 
-### Recursos criados
+O ciclo observado foi:
 
-* `aws_sqs_queue.app`
-* `aws_iam_policy.sqs`
-* `aws_iam_user_policy_attachment.sqs`
+```text
+INSUFFICIENT_DATA → OK → ALARM → OK
+```
 
-### Limpeza
+Também foi diferenciada a métrica do CloudWatch:
 
-Após os testes, foi executado:
+```text
+ApproximateNumberOfMessagesVisible
+```
 
-```bash
-terraform destroy
+do atributo da API do SQS:
+
+```text
+ApproximateNumberOfMessages
 ```
 
 O destroy foi concluído com sucesso.
 
-Não há infraestrutura do laboratório de SQS mantida após a conclusão dos testes.
+---
+
+# Day 12 — Auto Scaling
+
+**Concluído.**
+
+## Principais conceitos estudados
+
+* Elasticity;
+* Auto Scaling Group;
+* Launch Template;
+* Minimum Capacity;
+* Desired Capacity;
+* Maximum Capacity;
+* Scale out;
+* Scale in;
+* Health checks;
+* instance replacement;
+* auto healing;
+* distribuição entre Availability Zones;
+* Auto Scaling x CloudWatch;
+* Auto Scaling x Load Balancer;
+* Auto Scaling x Spot;
+* IAM Least Privilege;
+* Terraform;
+* AWS CLI.
+
+## Diagnóstico realizado
+
+Foram avaliados conceitos sobre:
+
+* elasticidade;
+* funcionamento do ASG;
+* diferença entre scale out e scale in;
+* Minimum/Desired/Maximum Capacity;
+* métricas do CloudWatch;
+* replacement de instâncias;
+* relação entre ASG e ALB;
+* Launch Template;
+* capacidade de scale in e scale out;
+* configuração adequada para controle de custos.
+
+Foram identificadas principalmente duas correções conceituais:
+
+```text
+Scale out → aumenta instâncias
+Scale in  → reduz instâncias
+```
+
+e:
+
+```text
+ASG ≠ Spot
+```
+
+ASG gerencia capacidade, enquanto Spot representa um modelo de aquisição de capacidade EC2.
+
+## Arquitetura utilizada
+
+Foi reutilizada a VPC existente:
+
+```text
+VPC:
+vpc-09902363bc6acf897
+
+CIDR:
+10.0.0.0/16
+```
+
+Subnets públicas:
+
+```text
+public-a:
+subnet-0cae15b6524afa528
+sa-east-1a
+
+public-b:
+subnet-0bf5df61263421f25
+sa-east-1b
+```
+
+Arquitetura:
+
+```text
+Existing VPC
+    ↓
+Public Subnet A / B
+    ↓
+Launch Template
+    ↓
+Auto Scaling Group
+    ↓
+EC2 instances
+```
+
+Configuração:
+
+```text
+AMI:
+Amazon Linux 2023
+
+Instance Type:
+t3.nano
+
+Minimum:
+1
+
+Desired:
+1
+
+Maximum:
+2
+
+Health Check:
+EC2
+
+Health Check Grace Period:
+60 seconds
+```
+
+Não foram utilizados NAT Gateway ou Application Load Balancer.
+
+## IAM
+
+Foi criada a policy:
+
+```text
+aws-cloud-practitioner-lab-autoscaling
+```
+
+A policy inclui as permissões necessárias para administrar os recursos do módulo.
+
+Também foi incluída:
+
+```text
+iam:CreateServiceLinkedRole
+```
+
+restrita ao serviço:
+
+```text
+autoscaling.amazonaws.com
+```
+
+para permitir a reprodução do laboratório em contas onde a service-linked role ainda não exista.
+
+Durante os testes, foi identificado que:
+
+```text
+autoscaling:SetDesiredCapacity
+```
+
+era necessária para alterar a capacidade através da AWS CLI.
+
+A permissão foi adicionada à policy específica, sem utilizar:
+
+```text
+autoscaling:*
+```
+
+A service-linked role do Auto Scaling já existia na conta utilizada:
+
+```text
+AWSServiceRoleForAutoScaling
+```
+
+## Experimentos realizados
+
+### Capacidade inicial
+
+```text
+Min     = 1
+Desired = 1
+Max     = 2
+```
+
+Uma instância foi criada automaticamente.
+
+### Scale out
+
+A capacidade desejada foi alterada:
+
+```text
+1 → 2
+```
+
+Duas instâncias ficaram:
+
+```text
+Healthy
+InService
+```
+
+distribuídas entre:
+
+```text
+sa-east-1a
+sa-east-1b
+```
+
+### Replacement
+
+Uma instância foi terminada manualmente.
+
+O ASG detectou a instância unhealthy e iniciou outra para recuperar a capacidade desejada.
+
+A atividade do ASG registrou o lançamento de uma nova instância em resposta à necessidade de substituir uma instância unhealthy.
+
+### Scale in
+
+A capacidade desejada foi alterada:
+
+```text
+2 → 1
+```
+
+Uma instância entrou em `Terminating` e o ASG convergiu novamente para uma única instância `InService`.
+
+### Validação do Terraform
+
+Após os testes:
+
+```text
+terraform plan
+```
+
+retornou:
+
+```text
+No changes. Your infrastructure matches the configuration.
+```
+
+## Cleanup
+
+O `terraform destroy` removeu:
+
+* Auto Scaling Group;
+* instâncias EC2 temporárias;
+* Launch Template;
+* Security Group.
+
+Durante a primeira tentativa de cleanup, o Terraform não possuía permissão para:
+
+```text
+iam:DetachUserPolicy
+```
+
+A permissão não foi adicionada à própria policy do laboratório porque isso permitiria que o usuário removesse sua própria policy e não era necessária para o objetivo do módulo.
+
+A associação da policy e a policy foram removidas utilizando temporariamente uma identidade administrativa.
+
+O cleanup foi então concluído com sucesso.
+
+## Principais aprendizados
+
+```text
+Launch Template
+    ↓
+como criar instâncias
+
+Auto Scaling Group
+    ↓
+quantas instâncias manter
+```
+
+```text
+Scale out
+    ↓
+mais instâncias
+
+Scale in
+    ↓
+menos instâncias
+```
+
+Também foi consolidada a diferença entre:
+
+```text
+Elasticidade
+→ adaptação da capacidade
+
+Alta disponibilidade
+→ disponibilidade através de redundância/arquitetura
+
+Auto Scaling
+→ gerenciamento automático da capacidade
+```
+
+**Day 12 — Auto Scaling: concluído.**
 
 ---
 
-### Day 11 — CloudWatch
+# 9. Relação entre os módulos
 
-**Status:** Concluído
+O curso é progressivo.
 
-**Tópicos estudados:**
+Modelo conceitual construído até aqui:
 
-* Visão geral e observabilidade com CloudWatch
-* Métricas
-* Estatísticas
-* Períodos
-* Dimensões
-* CloudWatch Logs
-* Log Group / Log Stream / Log Event
-* CloudWatch Agent
-* Logs Insights
-* CloudWatch Alarms
-* Estados dos alarms: `OK`, `ALARM`, `INSUFFICIENT_DATA`
-* Integração entre SQS e CloudWatch
-* CloudWatch vs. CloudTrail vs. EventBridge
-* CloudWatch vs. Auto Scaling
-* Noções de custos do CloudWatch
+```text
+IAM
+ ↓
+VPC
+ ↓
+EC2
+ ↓
+ECR
+ ↓
+ECS
+ ↓
+SQS
+ ↓
+CloudWatch
+ ↓
+Auto Scaling
+```
 
-**Hands-on:**
+Relações importantes:
 
-* Criada a fila SQS `aws-cloud-practitioner-lab-cloudwatch`
-* Criado o CloudWatch Alarm `aws-cloud-practitioner-lab-sqs-messages`
-* Métrica: `AWS/SQS / ApproximateNumberOfMessagesVisible`
-* Estatística: `Maximum`
-* Período: `60 seconds`
-* Períodos de avaliação: `1`
-* Threshold: `1`
-* Comparação: `GreaterThanOrEqualToThreshold`
-* Tratamento de dados ausentes: `notBreaching`
-* Utilizada policy IAM seguindo least privilege
-* Adicionada a permissão `cloudwatch:ListTagsForResource` após o Terraform retornar `AccessDenied` inicialmente
-* Observado o ciclo do alarm: `INSUFFICIENT_DATA → OK → ALARM → OK`
-* Verificado que a mudança de estado do alarm não é necessariamente imediata, pois existe latência na publicação e avaliação das métricas
-* Identificada a diferença entre a métrica do CloudWatch `ApproximateNumberOfMessagesVisible` e o atributo da API do SQS `ApproximateNumberOfMessages`
-* Executado `terraform destroy` com sucesso
+```text
+IAM Role
+    ↓
+EC2
 
-**Principal aprendizado:**
-O CloudWatch fornece monitoramento e observabilidade, enquanto outros serviços podem utilizar seus sinais para executar ações. Um CloudWatch Alarm avalia os dados de uma métrica de acordo com condições configuradas e altera seu estado conforme os valores observados.
+Docker
+    ↓
+ECR
+    ↓
+ECS
 
----
+VPC / Private Subnets
+    ↓
+RDS
 
-## 14. Padrão de explicação desejado
+ECS
+    ↓
+SQS
 
-O aluno prefere:
+ECS / RDS / SQS
+    ↓
+CloudWatch
 
-* explicações diretas;
-* passo a passo;
-* linguagem clara;
-* exemplos práticos;
-* entender o "porquê" antes de executar;
-* progressão de dificuldade;
-* evitar listas excessivamente longas;
-* evitar respostas genéricas;
-* relacionar conceitos com situações reais;
-* destacar pegadinhas da CLF-C02.
+CloudWatch
+    ↓
+métricas/observabilidade
 
-Não simplificar excessivamente conceitos importantes apenas para tornar a explicação curta.
+Auto Scaling
+    ↓
+capacidade EC2
+```
 
----
+A arquitetura final planejada continua sendo construída progressivamente:
 
-## 15. Continuidade em uma nova conversa
+```text
+Internet
+   ↓
+ALB
+   ↓
+ECS / Fargate
+   ├── SQS
+   └── RDS
+        ↓
+   CloudWatch
 
-Se esta conversa ficar muito longa, uma nova conversa pode ser iniciada usando este arquivo e o `docs/learning-log.md` como contexto.
+Docker → ECR → ECS
+```
 
-Mensagem recomendada:
-
-> Estou continuando meu projeto `aws-cloud-practitioner-lab` em uma nova conversa.
->
-> Leia o `docs/study-context.md` e o `docs/learning-log.md` do projeto para recuperar o contexto do curso.
->
-> Mantenha exatamente a metodologia definida no `study-context.md`.
->
-> O último módulo concluído é o **Day 7 — RDS**.
->
-> Quero continuar pelo próximo módulo, **Day 8 — ECR**.
->
-> Não repita os módulos anteriores. Comece pelas perguntas de diagnóstico e siga a sequência:
->
-> 1. perguntas;
-> 2. correção e explicação;
-> 3. conteúdo do dia;
-> 4. hands-on;
-> 5. anotações/README;
-> 6. atualização do `docs/learning-log.md`;
-> 7. atualização da tabela de Labs;
-> 8. conclusão e indicação do próximo dia.
->
-> Priorize segurança de custos, aprendizado real e explicações passo a passo.
->
-> **Não tente inferir padrões. Se houver alguma dúvida sobre como os módulos anteriores foram conduzidos, pergunte antes de prosseguir.**
+O Final Project será responsável por consolidar os conhecimentos estudados.
 
 ---
 
-## 16. Estado atual das credenciais e IAM do laboratório
+# 10. Estado atual do curso
 
-### IAM User utilizado pelo laboratório
+```text
+Day 1  → Cloud Concepts          ✅
+Day 2  → Global Infrastructure   ✅
+Day 3  → IAM                     ✅
+Day 4  → VPC                     ✅
+Day 5  → EC2                     ✅
+Day 6  → S3                      ✅
+Day 7  → RDS                     ✅
+Day 8  → ECR                     ✅
+Day 9  → ECS                     ✅
+Day 10 → SQS                     ✅
+Day 11 → CloudWatch              ✅
+Day 12 → Auto Scaling            ✅
+Day 13 → Final Project           ⬜ Próximo
+```
 
-O usuário IAM utilizado para executar comandos AWS CLI e Terraform é:
+**Próximo módulo: Day 13 — Final Project.**
+
+---
+
+# 11. IAM do laboratório
+
+## IAM User
 
 ```text
 aws-cloud-practitioner-lab
 ```
 
-O Terraform utiliza as credenciais configuradas localmente no AWS CLI para esse usuário.
+O Terraform utiliza as credenciais configuradas no AWS CLI para esse usuário.
 
-As permissões disponíveis são as permissões desse usuário e não as permissões do Root User ou de outra identidade IAM.
+As permissões utilizadas são as permissões desse usuário, não permissões do Root User ou de outra identidade.
 
-### Policies específicas dos módulos
+## Policies específicas
 
-O laboratório utiliza policies específicas conforme cada módulo exige.
-
-Atualmente foram utilizadas, entre outras:
+Policies utilizadas ao longo do laboratório incluem:
 
 ```text
 aws-cloud-practitioner-lab-read-identity
@@ -1249,13 +1181,42 @@ aws-cloud-practitioner-lab-vpc
 aws-cloud-practitioner-lab-ec2
 aws-cloud-practitioner-lab-s3
 aws-cloud-practitioner-lab-rds
+aws-cloud-practitioner-lab-ecr
+aws-cloud-practitioner-lab-ecs
+aws-cloud-practitioner-lab-sqs
+aws-cloud-practitioner-lab-cloudwatch
+aws-cloud-practitioner-lab-autoscaling
 ```
 
-O princípio adotado é adicionar somente as permissões necessárias para o exercício.
+O princípio adotado é adicionar somente as permissões necessárias para cada exercício.
 
-### Regra para os próximos hands-on
+## IAM Role
 
-Antes de executar um `terraform apply` que crie ou modifique recursos AWS:
+Existe a Role:
+
+```text
+aws-cloud-practitioner-lab-ec2-s3-read
+```
+
+Trust Policy:
+
+```text
+EC2 → pode assumir a Role
+```
+
+Permissions Policy:
+
+```text
+AmazonS3ReadOnlyAccess
+```
+
+Essa Role não concede permissões ao usuário `aws-cloud-practitioner-lab`.
+
+---
+
+# 12. Regra para novos hands-on
+
+Antes de executar um `terraform apply`:
 
 ```text
 identificar recurso
@@ -1277,61 +1238,45 @@ terraform destroy
 
 Não assumir que o Terraform possui permissões suficientes somente porque consegue executar `plan` ou consultar a identidade.
 
-### IAM Role criada no Day 3
-
-Existe a Role:
-
-```text
-aws-cloud-practitioner-lab-ec2-s3-read
-```
-
-Ela possui:
-
-```text
-Trust Policy:
-EC2 → pode assumir a Role
-
-Permissions Policy:
-AmazonS3ReadOnlyAccess
-```
-
-Essa Role não concede permissões ao usuário `aws-cloud-practitioner-lab`.
-
-Ela será utilizada para demonstrar credenciais temporárias em workloads AWS.
-
-### Regra de segurança
-
-Nunca colocar Access Key ou Secret Access Key diretamente no Terraform, código ou Git.
-
 ---
 
-## 17. Padrão de commits e histórico do projeto
+# 13. Git
 
-### Padrão de mensagens
+## Padrão
 
 ```text
 tipo: descrição curta em inglês
 ```
 
-Tipos utilizados:
-
-* `docs:`
-* `feat:`
-
-As mensagens devem ser:
-
-* curtas;
-* objetivas;
-* em inglês;
-* iniciadas por um tipo semântico;
-* descrever claramente o que foi alterado.
-
-### Histórico registrado anteriormente
+Tipos:
 
 ```text
-e47533e (HEAD -> main) docs: update AWS lab IAM context
+docs:
+feat:
+```
+
+Usar:
+
+* `docs:` para documentação, learning log, README e contexto;
+* `feat:` para implementação de infraestrutura.
+
+Antes de novos commits:
+
+```bash
+git status
+git log --oneline --decorate -n 10
+```
+
+Verificar também se não existem credenciais ou arquivos sensíveis.
+
+---
+
+## Histórico registrado anteriormente
+
+```text
+e47533e docs: update AWS lab IAM context
 59f8c18 docs: add study context and methodology
-557aa06 (origin/main, origin/HEAD) docs: complete iam study and lab
+557aa06 docs: complete iam study and lab
 5beb710 feat: add iam terraform lab
 6016ae0 docs: complete global infrastructure study
 037e808 docs: mark cloud concepts as completed
@@ -1340,79 +1285,63 @@ c9f6694 docs: update project README
 0907a44 Initial commit
 ```
 
-Antes de iniciar um novo commit:
-
-```bash
-git status
-git log --oneline --decorate -n 10
-```
-
-Evitar commits duplicados quando uma alteração já tiver sido registrada.
-
-### Commits do Day 7
-
-O Day 7 envolve duas categorias de alteração:
-
-```text
-feat:
-→ infraestrutura Terraform do RDS
-
-docs:
-→ README, learning log e contexto
-```
-
-Os commits exatos devem ser definidos após verificar o estado atual do Git, para evitar duplicação.
+Os commits dos módulos posteriores devem ser definidos após verificar o estado atual do Git para evitar duplicações.
 
 ---
 
-## 18. Estado atual do curso
+# 14. Continuidade em nova conversa
 
-### Estado dos módulos
+Se esta conversa ficar muito longa, uma nova conversa pode utilizar:
 
 ```text
-Day 1  → Cloud Concepts          ✅
-Day 2  → Global Infrastructure   ✅
-Day 3  → IAM                     ✅
-Day 4  → VPC                     ✅
-Day 5  → EC2                     ✅
-Day 6  → S3                      ✅
-Day 7  → RDS                     ✅
-Day 8  → ECR                     ✅
-Day 9  → ECS                     ✅
-Day 10 → SQS                     ✅
-Day 11 → CloudWatch              ✅
-Day 12 → Auto Scaling            ⬜ Próximo
-Day 13 → Final Project           ⬜
+docs/study-context.md
+docs/learning-log.md
 ```
+
+como fonte principal de contexto.
+
+Mensagem recomendada:
+
+> Estou continuando meu projeto `aws-cloud-practitioner-lab` em uma nova conversa.
+>
+> Leia o `docs/study-context.md` e o `docs/learning-log.md` do projeto para recuperar o contexto do curso.
+>
+> O último módulo concluído é o **Day 12 — Auto Scaling**.
+>
+> Quero continuar pelo próximo módulo, **Day 13 — Final Project**.
+>
+> Não repita os módulos anteriores.
+>
+> Mantenha exatamente a metodologia definida no `study-context.md`:
+>
+> 1. diagnóstico;
+> 2. correção e explicação;
+> 3. conteúdo do dia;
+> 4. hands-on;
+> 5. README;
+> 6. learning log;
+> 7. atualização do study context;
+> 8. conclusão.
+>
+> Priorize segurança de custos, aprendizado real e explicações passo a passo.
+>
+> **Não tente inferir padrões. Se houver alguma dúvida sobre como os módulos anteriores foram conduzidos, pergunte antes de prosseguir.**
 
 ---
 
-## Continuidade
+# 15. Padrão de explicação desejado
 
-O próximo módulo deve ser:
+O aluno prefere:
 
-**Day 12 — Auto Scaling**
+* explicações diretas;
+* passo a passo;
+* linguagem clara;
+* exemplos práticos;
+* entender o "porquê" antes de executar;
+* progressão de dificuldade;
+* evitar listas excessivamente longas;
+* evitar respostas genéricas;
+* relacionar conceitos com situações reais;
+* destacar pegadinhas da CLF-C02.
 
-A metodologia continua:
-
-```text
-diagnóstico
-    ↓
-correção
-    ↓
-explicação
-    ↓
-entender
-    ↓
-criar
-    ↓
-testar
-    ↓
-observar
-    ↓
-documentar
-    ↓
-destruir
-```
-
-O próximo dia deve começar pelo **diagnóstico de Auto Scaling**, sem repetir CloudWatch ou os módulos anteriores.
+Não simplificar excessivamente conceitos importantes apenas para tornar a explicação curta.

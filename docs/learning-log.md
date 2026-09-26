@@ -1723,3 +1723,50 @@ terraform destroy
 Os recursos do laboratório foram destruídos com sucesso.
 
 ---
+
+## Day 12 — Auto Scaling
+
+### Conteúdo estudado
+
+Estudei o Amazon EC2 Auto Scaling, com foco em Auto Scaling Groups, Launch Templates, Minimum/Desired/Maximum Capacity, scale out, scale in, health checks, replacement de instâncias e distribuição entre Availability Zones.
+
+Também revisei a relação entre Auto Scaling, EC2, CloudWatch e elasticidade.
+
+### Laboratório
+
+Reutilizei a VPC existente e suas duas subnets públicas em `sa-east-1a` e `sa-east-1b`.
+
+Criei com Terraform:
+
+* Security Group dedicado;
+* Launch Template usando Amazon Linux 2023 e `t3.nano`;
+* Auto Scaling Group com `Min=1`, `Desired=1` e `Max=2`.
+
+### Experimentos
+
+* A capacidade inicial de 1 instância foi criada automaticamente pelo ASG.
+* Aumentei `DesiredCapacity` de 1 para 2 e observei o scale out.
+* As duas instâncias ficaram `Healthy` e `InService`, uma em cada Availability Zone.
+* Terminei manualmente uma instância e observei o ASG detectá-la como unhealthy e criar uma substituta.
+* Reduzi `DesiredCapacity` de 2 para 1 e observei o scale in.
+* Executei `terraform plan` após os experimentos e obtive `No changes`, confirmando que o estado final correspondia à configuração declarada.
+
+### Aprendizados
+
+O Launch Template define como as instâncias devem ser criadas, enquanto o Auto Scaling Group controla quantas instâncias devem existir.
+
+Scale out aumenta a quantidade de instâncias e scale in reduz essa quantidade.
+
+O ASG também pode realizar auto healing, substituindo instâncias que deixam de estar saudáveis para recuperar a capacidade desejada.
+
+Outro aprendizado foi a aplicação prática de least privilege: a operação `SetDesiredCapacity` inicialmente retornou `AccessDenied`, permitindo identificar a ação IAM exata que faltava e adicioná-la à policy específica do módulo, sem conceder `autoscaling:*`.
+
+### Custos
+
+Foi utilizado `t3.nano` e apenas uma instância como capacidade desejada final. O ambiente deve ser destruído ao final do módulo para evitar custos desnecessários.
+
+### Status
+
+Concluído.
+
+---
