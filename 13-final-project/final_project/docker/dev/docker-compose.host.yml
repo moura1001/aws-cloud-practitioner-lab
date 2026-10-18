@@ -1,0 +1,97 @@
+services:
+  localstack:
+    image: localstack/localstack:4.13.1
+    network_mode: host
+    environment:
+      ACTIVATE_PRO: "0"
+      SERVICES: sqs,sns,s3,logs
+      DEBUG: "1"
+      DATA_DIR: /tmp/localstack/data
+      AWS_DEFAULT_REGION: us-east-1
+      SQS_ENDPOINT_STRATEGY: path
+      SQS_QUEUE_NAMES: input-queue,dlq-queue
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./localstack-init:/etc/localstack/init/ready.d
+
+  valkey:
+    image: valkey/valkey:7
+    network_mode: host
+    restart: unless-stopped
+
+  external-service-mock:
+    image: mendhak/http-https-echo:latest
+    network_mode: host
+    environment:
+      ECHO_BACK_TO_CLIENT: "true"
+      JWT_HEADER: X-API-Key
+      RESPONSE_CODE: "200"
+      RESPONSE_CONTENT_TYPE: application/json
+      RESPONSE_BODY: '{"status":"OK","message":"processed"}'
+      HTTP_PORT: "8888"
+      HTTPS_PORT: "8443"
+
+  base-api:
+    build:
+      context: ../..
+      dockerfile: docker/dev/Dockerfile-api
+    network_mode: host
+    user: "185:185"
+    environment:
+      APP_API_KEY: dev-secret
+      APP_LOAD_METRICS_ENABLED: true
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_REGION: us-east-1
+      AWS_LOCALSTACK_ENDPOINT: http://localhost:4566
+      AWS_SQS_QUEUES_INPUT_QUEUE_URL: http://localhost:4566/000000000000/input-queue
+      VALKEY_URL: redis://localhost:6379
+      VALKEY_HOST: localhost
+      VALKEY_PORT: "6379"
+      LOGGING_FILE_NAME: /app/logs/api.log
+      SPRING_PROFILES_ACTIVE: local
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://localhost:4318/v1/traces
+      MANAGEMENT_TRACING_ENABLED: "true"
+      AMBIENTE: local
+    volumes:
+      - microservice_logs:/app/logs
+
+  base-consumer:
+    build:
+      context: ../..
+      dockerfile: docker/dev/Dockerfile
+    network_mode: host
+    user: "185:185"
+    environment:
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_REGION: us-east-1
+      AWS_LOCALSTACK_ENDPOINT: http://localhost:4566
+      AWS_SQS_QUEUES_INPUT_QUEUE_URL: http://localhost:4566/000000000000/input-queue
+      AWS_SQS_QUEUES_DLQ_QUEUE_URL: http://localhost:4566/000000000000/dlq-queue
+      AWS_SQS_MAX_CONCURRENT_MESSAGES: 64
+      AWS_SQS_MAX_MESSAGES_PER_POLL: 10
+      VALKEY_URL: redis://localhost:6379
+      VALKEY_HOST: localhost
+      VALKEY_PORT: "6379"
+      EXTERNAL_SERVICE_URL_PROCESS: http://localhost:8888/process
+      EXTERNAL_SERVICE_URL_HEALTH: http://localhost:8888/health
+      EXTERNAL_SERVICE_POOL_MAX_CONN_TOTAL: 50
+      EXTERNAL_SERVICE_POOL_MAX_CONN_PER_ROUTE: 20
+      SERVER_PORT: "8082"
+      LOGGING_FILE_NAME: /app/logs/consumer.log
+      SPRING_PROFILES_ACTIVE: local
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://localhost:4318/v1/traces
+      MANAGEMENT_TRACING_ENABLED: "true"
+      AMBIENTE: local
+    volumes:
+      - microservice_logs:/app/logs
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8082/actuator/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+
+volumes:
+  microservice_logs:

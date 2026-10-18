@@ -1,0 +1,241 @@
+services:
+
+  localstack:
+    image: localstack/localstack:4.13.1
+    ports:
+      - "4566:4566"
+      - "4576:4576"
+    environment:
+      - ACTIVATE_PRO=0
+      - SERVICES=sqs,sns,s3,logs
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - AWS_DEFAULT_REGION=us-east-1
+      - SQS_ENDPOINT_STRATEGY=path
+      - SQS_QUEUE_NAMES=input-queue,dlq-queue
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./localstack-init:/etc/localstack/init/ready.d
+    networks:
+      - microservice-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  sqs-admin:
+    image: pacovk/sqs-admin:latest
+    ports:
+      - "3999:3999"
+    environment:
+      - SQS_ENDPOINT_URL=http://localstack:4566
+      - SQS_AWS_REGION=us-east-1
+    depends_on:
+      - localstack
+    networks:
+      - microservice-network
+
+  valkey:
+    image: valkey/valkey:7
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - microservice-network
+
+  redis-insight:
+    image: redis/redisinsight:latest
+    restart: unless-stopped
+    ports:
+      - "5540:5540"
+    volumes:
+      - redisinsight_data:/data
+    environment:
+      - RI_REDIS_HOST=valkey
+      - RI_REDIS_PORT=6379
+    networks:
+      - microservice-network
+
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: microservice
+      MYSQL_USER: microservice_user
+      MYSQL_PASSWORD: senha123
+      TZ: America/Sao_Paulo
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - microservice-network
+
+  adminer:
+    image: adminer:latest
+    restart: unless-stopped
+    ports:
+      - "8090:8080"
+    depends_on:
+      - mysql
+    networks:
+      - microservice-network
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_FEATURE_TOGGLES_ENABLE=alertingSimplified
+      - GF_UNIFIED_ALERTING_ENABLED=true
+      - GF_LOG_LEVEL=warn
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - tempo
+      - loki
+    networks:
+      - microservice-network
+
+  tempo:
+    image: grafana/tempo:latest
+    user: "0:0"
+    ports:
+      - "3200:3200"
+      - "4318:4318"
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./tempo/tempo.yaml:/etc/tempo.yaml
+      - tempo_data:/tmp/tempo
+    networks:
+      - microservice-network
+
+  loki:
+    image: grafana/loki:2.9.0
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/config.yaml
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/config.yaml
+    networks:
+      - microservice-network
+
+  promtail:
+    image: grafana/promtail:2.9.0
+    volumes:
+      - ./promtail/promtail-config.yaml:/etc/promtail/config.yml
+      - microservice_logs:/app/logs:ro
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+    networks:
+      - microservice-network
+
+  external-service-mock:
+    image: mendhak/http-https-echo:latest
+    ports:
+      - "8888:8080"
+    environment:
+      - ECHO_BACK_TO_CLIENT=true
+      - JWT_HEADER=X-API-Key
+      - RESPONSE_CODE=200
+      - RESPONSE_CONTENT_TYPE=application/json
+      - RESPONSE_BODY={"status":"OK","message":"processed"}
+    networks:
+      - microservice-network
+
+  base-api:
+    build:
+      context: ../..
+      dockerfile: docker/dev/Dockerfile-api
+    user: "185:185"
+    environment:
+      APP_API_KEY: dev-secret
+      APP_LOAD_METRICS_ENABLED: true
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_REGION: us-east-1
+      AWS_LOCALSTACK_ENDPOINT: http://localstack:4566
+      AWS_SQS_QUEUES_INPUT_QUEUE_URL: http://localstack:4566/000000000000/input-queue
+      VALKEY_URL: redis://valkey:6379
+      VALKEY_HOST: valkey
+      VALKEY_PORT: 6379
+      SERVER_PORT: 8080
+      LOGGING_FILE_NAME: /app/logs/api.log
+      SPRING_PROFILES_ACTIVE: local
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://tempo:4318/v1/traces
+      MANAGEMENT_TRACING_ENABLED: "true"
+      LOKI_URL: http://loki:3100/loki/api/v1/push
+      AMBIENTE: local
+    depends_on:
+      localstack:
+        condition: service_healthy
+      valkey:
+        condition: service_started
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    volumes:
+      - microservice_logs:/app/logs
+    networks:
+      - microservice-network
+
+  base-consumer:
+    build:
+      context: ../..
+      dockerfile: docker/dev/Dockerfile
+    user: "185:185"
+    environment:
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_REGION: us-east-1
+      AWS_LOCALSTACK_ENDPOINT: http://localstack:4566
+      AWS_SQS_QUEUES_INPUT_QUEUE_URL: http://localstack:4566/000000000000/input-queue
+      AWS_SQS_QUEUES_DLQ_QUEUE_URL: http://localstack:4566/000000000000/dlq-queue
+      AWS_SQS_MAX_CONCURRENT_MESSAGES: 64
+      AWS_SQS_MAX_MESSAGES_PER_POLL: 10
+      VALKEY_URL: redis://valkey:6379
+      VALKEY_HOST: valkey
+      VALKEY_PORT: 6379
+      EXTERNAL_SERVICE_URL_PROCESS: http://external-service-mock:8080/process
+      EXTERNAL_SERVICE_URL_HEALTH: http://external-service-mock:8080/health
+      EXTERNAL_SERVICE_POOL_MAX_CONN_TOTAL: 50
+      EXTERNAL_SERVICE_POOL_MAX_CONN_PER_ROUTE: 20
+      SERVER_PORT: 8080
+      LOGGING_FILE_NAME: /app/logs/consumer.log
+      SPRING_PROFILES_ACTIVE: local
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://tempo:4318/v1/traces
+      MANAGEMENT_TRACING_ENABLED: "true"
+      LOKI_URL: http://loki:3100/loki/api/v1/push
+      AMBIENTE: local
+    depends_on:
+      external-service-mock:
+        condition: service_started
+      localstack:
+        condition: service_healthy
+      valkey:
+        condition: service_started
+    ports:
+      - "8082:8080"
+    restart: unless-stopped
+    volumes:
+      - microservice_logs:/app/logs
+    networks:
+      - microservice-network
+
+volumes:
+  mysql_data:
+  redisinsight_data:
+  microservice_logs:
+  tempo_data:
+
+networks:
+  microservice-network:
+    driver: bridge

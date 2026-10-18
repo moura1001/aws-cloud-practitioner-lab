@@ -1,0 +1,139 @@
+debug: false
+server:
+  shutdown: graceful
+  http2:
+    enabled: '${SERVER_HTTP2_ENABLED:true}'
+  tomcat:
+    max-connections: '${TOMCAT_MAX_CONNECTIONS:10000}'
+    accept-count: '${TOMCAT_ACCEPT_COUNT:500}'
+    connection-timeout: '${TOMCAT_CONNECTION_TIMEOUT:15s}'
+    keep-alive-timeout: '${TOMCAT_KEEP_ALIVE_TIMEOUT:10s}'
+
+spring:
+  application:
+    name: base-consumer
+  profiles:
+    active: '${SPRING_PROFILES_ACTIVE:local}'
+  lifecycle:
+    timeout-per-shutdown-phase: '${LIFECYCLE_TIMEOUT_SHUTDOWN:15s}'
+  retry:
+    enabled: true
+  data:
+    redis:
+      timeout: '${VALKEY_TIMEOUT:2000ms}'
+      url: '${VALKEY_URL}'
+      host: '${VALKEY_HOST}'
+      port: '${VALKEY_PORT}'
+      lettuce:
+        pool:
+          max-active: '${VALKEY_POOL_MAX_ACTIVE:64}'
+          max-idle: '${VALKEY_POOL_MAX_IDLE:32}'
+          min-idle: '${VALKEY_POOL_MIN_IDLE:8}'
+          max-wait: '${VALKEY_POOL_MAX_WAIT:2000ms}'
+  cloud:
+    aws:
+      sqs:
+        listener:
+          max-concurrent-messages: '${AWS_SQS_MAX_CONCURRENT_MESSAGES:64}'
+          max-messages-per-poll: '${AWS_SQS_MAX_MESSAGES_PER_POLL:10}'
+  threads:
+    virtual:
+      enabled: true
+  mvc:
+    async:
+      request-timeout: '${MVC_ASYNC_TIMEOUT:30s}'
+
+app:
+  file-monitoring:
+    pool-interval: 10000
+    stability-threshold: 10000
+    max-attempts: 60
+    known-files-ttl-ms: 300000
+  redis:
+    event-ttl: 600
+  load-test-metrics:
+    enabled: '${APP_LOAD_METRICS_ENABLED:false}'
+    ttl-seconds: '${APP_LOAD_METRICS_TTL_SECONDS:86400}'
+  executor:
+    async-core-size: 16
+    async-max-size: 64
+    async-queue-capacity: 1000
+    async-await-termination-seconds: 30
+  external-service:
+    url:
+      process: '${EXT_SERVICE_URL_PROCESS}'
+      health: '${EXT_SERVICE_URL_HEALTH:}'
+    http:
+      connect-timeout-ms: '${EXT_SERVICE_HTTP_CONNECT_TIMEOUT_MS:5000}'
+      read-timeout-ms: '${EXT_SERVICE_HTTP_READ_TIMEOUT_MS:30000}'
+    pool:
+      max-conn-total: '${EXT_SERVICE_POOL_MAX_CONN_TOTAL:50}'
+      max-conn-per-route: '${EXT_SERVICE_POOL_MAX_CONN_PER_ROUTE:20}'
+      keep-alive-seconds: '${EXT_SERVICE_POOL_KEEP_ALIVE_SECONDS:60}'
+    retry:
+      max-retries: 4
+      initial-delay-ms: 1000
+      multiplier: 2.0
+      max-delay-ms: 30000
+  circuit-breaker:
+    key: app:external-service:circuit
+    failure-threshold: 5
+    open-cooldown-ms: 30000
+    probe-interval-ms: 10000
+    probe-lock-ttl-ms: 8000
+    half-open-max-successes: 1
+    pause-listener-ids:
+      - inputQueueListener
+      - dlqQueueListener
+
+aws:
+  region: '${AWS_REGION:sa-east-1}'
+  accessKeyId: '${AWS_ACCESS_KEY_ID:}'
+  secretKey: '${AWS_SECRET_ACCESS_KEY:}'
+  localstack-endpoint: '${AWS_LOCALSTACK_ENDPOINT:}'
+  sdk:
+    http:
+      max-connections: '${AWS_SDK_HTTP_MAX_CONNECTIONS:100}'
+      connection-timeout-ms: '${AWS_SDK_HTTP_CONNECTION_TIMEOUT_MS:5000}'
+      connection-acquisition-timeout-ms: '${AWS_SDK_HTTP_CONN_ACQUISITION_TIMEOUT_MS:10000}'
+    async-http:
+      max-concurrency: '${AWS_SDK_ASYNC_HTTP_MAX_CONCURRENCY:200}'
+      max-pending-connection-acquires: '${AWS_SDK_ASYNC_HTTP_MAX_PENDING_ACQUIRES:10000}'
+      connection-timeout-ms: '${AWS_SDK_ASYNC_HTTP_CONNECTION_TIMEOUT_MS:5000}'
+      connection-acquisition-timeout-ms: '${AWS_SDK_ASYNC_HTTP_CONN_ACQUISITION_TIMEOUT_MS:10000}'
+    retry:
+      max-attempts: '${AWS_SDK_RETRY_MAX_ATTEMPTS:3}'
+    api-call:
+      attempt-timeout-ms: '${AWS_SDK_API_ATTEMPT_TIMEOUT_MS:25000}'
+      timeout-ms: '${AWS_SDK_API_CALL_TIMEOUT_MS:100000}'
+  sqs:
+    queues:
+      input-queue: '${AWS_SQS_QUEUES_INPUT_QUEUE_URL}'
+      dlq-queue: '${AWS_SQS_QUEUES_DLQ_QUEUE_URL:}'
+      visibility-timeout-seconds: '${AWS_SQS_VISIBILITY_TIMEOUT_SECONDS:90}'
+      max-messages-per-poll: '${AWS_SQS_MAX_MESSAGES_PER_POLL:10}'
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  tracing:
+    enabled: '${MANAGEMENT_TRACING_ENABLED:true}'
+    sampling:
+      probability: '${MANAGEMENT_TRACING_SAMPLING_PROBABILITY:1.0}'
+    export:
+      enabled: '${MANAGEMENT_TRACING_EXPORT_ENABLED:true}'
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: '${MANAGEMENT_OTLP_TRACING_ENDPOINT:http://localhost:4318/v1/traces}'
+          transport: http
+  otlp:
+    metrics:
+      export:
+        enabled: false

@@ -1,0 +1,46 @@
+HELP.md
+target/
+docker/logs/
+docker/dev/logs/
+docker/Basedados/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### .env ###
+.env
+
+### Artefatos de teste de carga e logs dos scripts PowerShell ###
+scripts-ponto-montagem/logs/
+*.jsonl
+*.jsonl.*
+scripts-ponto-montagem/load-manifest.json
+scripts-ponto-montagem/load-validation-report.json

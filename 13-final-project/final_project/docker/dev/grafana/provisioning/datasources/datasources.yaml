@@ -1,0 +1,40 @@
+apiVersion: 1
+
+datasources:
+  - name: Loki
+    uid: loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    isDefault: true
+    jsonData:
+      maxLines: 1000
+      derivedFields:
+        - name: TraceID
+          matcherRegex: "\"traceId\"\\s*:\\s*\"([^\"]+)\""
+          datasourceUid: tempo
+          url: $${__value.raw}
+  - name: Tempo
+    uid: tempo
+    type: tempo
+    access: proxy
+    url: http://tempo:3200
+    jsonData:
+      httpMethod: GET
+      tracesToLogs:
+        datasourceUid: loki
+        spanStartTimeShift: "1m"
+        spanEndTimeShift: "1m"
+        filterByTraceID: true
+        filterBySpanID: false
+        mapTagNamesEnabled: true
+        tags:
+          - correlation_id
+          - request_id
+          - severity
+      serviceMap:
+        datasourceUid: loki
+      nodeGraph:
+        enabled: true
+      search:
+        hide: false

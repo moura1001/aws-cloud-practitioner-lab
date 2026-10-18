@@ -1,0 +1,25 @@
+# Profile local - desenvolvimento
+server:
+  port: 8082
+
+# Redis/Valkey LocalStack para desenvolvimento local
+spring:
+  data:
+    redis:
+      url: '${VALKEY_URL:redis://localhost:6379}'
+      host: '${VALKEY_HOST:localhost}'
+      port: '${VALKEY_PORT:6379}'
+      password: '${VALKEY_PASSWORD:}'
+
+app:
+  external-service:
+    url:
+      process: '${EXT_SERVICE_URL_PROCESS:http://localhost:8888/process}'
+      health: '${EXT_SERVICE_URL_HEALTH:http://localhost:8888/health}'
+
+# Filas SQS LocalStack para desenvolvimento local
+aws:
+  sqs:
+    queues:
+      input-queue: '${AWS_SQS_QUEUES_INPUT_QUEUE_URL:http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/input-queue}'
+      dlq-queue: '${AWS_SQS_QUEUES_DLQ_QUEUE_URL:http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/dlq-queue}'

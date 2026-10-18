@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: base-consumer
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 2000ms
+  main:
+    allow-bean-definition-overriding: true
+
+aws:
+  region: us-east-1
+  accessKeyId: test
+  secretKey: test
+  localstack-endpoint: http://localhost:4566
+  sqs:
+    queues:
+      input-queue: http://localhost:4566/000000000000/input-queue
+      dlq-queue: http://localhost:4566/000000000000/dlq-queue
+
+app:
+  circuit-breaker:
+    key: it:circuit:test
+    failure-threshold: 3
+    open-cooldown-ms: 1000
+    probe-interval-ms: 500
+    probe-lock-ttl-ms: 400
+  external-service:
+    url:
+      process: http://localhost:9999/process
+      health: http://localhost:9999/health
+    http:
+      connect-timeout-ms: 500
+      read-timeout-ms: 1000
+  redis:
+    event-ttl: 60
+
+management:
+  tracing:
+    enabled: false
+  opentelemetry:
+    tracing:
+      export:
+        enabled: false

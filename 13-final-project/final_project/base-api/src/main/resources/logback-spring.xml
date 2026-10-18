@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <property name="APP_NAME" value="base-api"/>
+    <property name="LOG_FILE" value="${LOGGING_FILE_NAME:-/app/logs/api.log}"/>
+
+    <appender name="JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="com.example.template.api.infrastructure.logging.layout.CustomJsonLayout"/>
+        </encoder>
+    </appender>
+
+    <springProfile name="local">
+        <appender name="FILE_JSON" class="ch.qos.logback.core.FileAppender">
+            <file>${LOG_FILE}</file>
+            <append>true</append>
+            <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+                <layout class="com.example.template.api.infrastructure.logging.layout.CustomJsonLayout"/>
+            </encoder>
+        </appender>
+
+        <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+            <http>
+                <url>${LOKI_URL:-http://localhost:3100/loki/api/v1/push}</url>
+                <connectionTimeoutMs>30000</connectionTimeoutMs>
+                <requestTimeoutMs>10000</requestTimeoutMs>
+                <maxRetries>3</maxRetries>
+                <minRetryBackoffMs>500</minRetryBackoffMs>
+                <maxRetryBackoffMs>30000</maxRetryBackoffMs>
+            </http>
+            <format>
+                <label>
+                    <pattern>job=${APP_NAME},app=${APP_NAME},env=${AMBIENTE:-local},component=api</pattern>
+                </label>
+            </format>
+            <batch>
+                <maxItems>${LOKI_BATCH_MAX_ITEMS:-100}</maxItems>
+                <maxBytes>${LOKI_BATCH_MAX_BYTES:-1048576}</maxBytes>
+                <timeoutMs>${LOKI_BATCH_TIMEOUT_MS:-5000}</timeoutMs>
+                <staticLabels>true</staticLabels>
+                <drainOnStop>true</drainOnStop>
+                <sendQueueMaxBytes>20971520</sendQueueMaxBytes>
+                <useDirectBuffers>true</useDirectBuffers>
+            </batch>
+        </appender>
+
+        <root level="INFO">
+            <appender-ref ref="JSON"/>
+            <appender-ref ref="FILE_JSON"/>
+            <appender-ref ref="LOKI"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="!local">
+        <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+            <http>
+                <url>${LOKI_URL:-http://localhost:3100/loki/api/v1/push}</url>
+                <connectionTimeoutMs>30000</connectionTimeoutMs>
+                <requestTimeoutMs>10000</requestTimeoutMs>
+                <maxRetries>3</maxRetries>
+                <minRetryBackoffMs>500</minRetryBackoffMs>
+                <maxRetryBackoffMs>30000</maxRetryBackoffMs>
+            </http>
+            <format>
+                <label>
+                    <pattern>job=${APP_NAME},app=${APP_NAME},env=${AMBIENTE:-local},component=api</pattern>
+                </label>
+            </format>
+            <batch>
+                <maxItems>${LOKI_BATCH_MAX_ITEMS:-100}</maxItems>
+                <maxBytes>${LOKI_BATCH_MAX_BYTES:-1048576}</maxBytes>
+                <timeoutMs>${LOKI_BATCH_TIMEOUT_MS:-5000}</timeoutMs>
+                <staticLabels>true</staticLabels>
+                <drainOnStop>true</drainOnStop>
+                <sendQueueMaxBytes>20971520</sendQueueMaxBytes>
+                <useDirectBuffers>true</useDirectBuffers>
+            </batch>
+        </appender>
+
+        <root level="INFO">
+            <appender-ref ref="JSON"/>
+            <appender-ref ref="LOKI"/>
+        </root>
+    </springProfile>
+
+</configuration>
