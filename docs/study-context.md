@@ -39,10 +39,10 @@ aws-cloud-practitioner-lab/
 ├── 11-cloudwatch/
 ├── 12-auto-scaling/
 ├── 13-final-project/
+│   ├── README.md          # diagnóstico + arquitetura final
+│   ├── final_project/     # API + consumer (Spring Boot)
+│   └── infra/             # Terraform (ECS on EC2, ALB, SQS, Valkey, ECR)
 ├── docs/
-│   ├── architecture/
-│   ├── cost-control/
-│   ├── notes/
 │   ├── learning-log.md
 │   └── study-context.md
 └── README.md
@@ -66,9 +66,9 @@ aws-cloud-practitioner-lab/
 | 10 | SQS                   | Hands-on | ✅ Completed   |
 | 11 | CloudWatch            | Hands-on | ✅ Completed   |
 | 12 | Auto Scaling          | Hands-on | ✅ Completed   |
-| 13 | Final Project         | Hands-on | ⬜ Not started |
+| 13 | Final Project         | Hands-on | ✅ Completed   |
 
-**Próximo módulo: Day 13 — Final Project.**
+**Módulos concluídos. Próximo passo: simulados (practice exams) da CLF-C02.**
 
 ---
 
@@ -1059,6 +1059,62 @@ Auto Scaling
 
 ---
 
+## Day 13 — Final Project
+
+**Concluído. ✅**
+
+Projeto final consolidando todos os módulos em uma aplicação de dois
+microsserviços (Java 25 + Spring Boot 4):
+
+```text
+base-api      → API REST → publica no SQS
+base-consumer → consome SQS → Valkey (idempotência) → HTTP externo
+                (retry + circuit breaker) → DLQ em caso de falha
+```
+
+Arquitetura implantada (`sa-east-1`, reutilizando a VPC do Day 4):
+
+```text
+Cliente → ALB (público) → base-api (ECS on EC2) → SQS input-queue
+                                                        ↓
+                              base-consumer (ECS on EC2)
+                                 ├── Valkey (loopback, privado)
+                                 ├── serviço HTTP externo (mock)
+                                 └── dlq-queue (falha)
+```
+
+Decisões:
+
+* Redis/Valkey como container ECS na mesma capacidade (US$ 0 extra, em vez de
+  ElastiCache ~US$ 21,90/mês);
+* Sem NAT Gateway e sem VPC Interface Endpoints — sub-rede pública + IP público;
+* ECS com EC2 (`t3.small`), `host` network mode;
+* ECR (2 repositórios), CloudWatch Logs + Alarms;
+* Segredos em SSM SecureString (`/practitioner-lab/final/...`), injetados como
+  secrets do ECS.
+
+IAM Least Privilege:
+
+```text
+aws-cloud-practitioner-lab-final-ec2
+aws-cloud-practitioner-lab-final-task-execution
+aws-cloud-practitioner-lab-final-api-task
+aws-cloud-practitioner-lab-final-consumer-task
+aws-cloud-practitioner-lab-final            (policy de deploy scoped)
+```
+
+Teste ponta a ponta validado:
+
+```text
+POST /events → 202 → input-queue 0 → POST /process 200 → dlq 0
+```
+
+Terraform: `apply` e `destroy` concluídos e validados (sem recursos órfãos).
+Runbook em `13-final-project/infra/RUNBOOK.md`. Custo estimado ≈ US$ 55–65/mês
+se mantido ligado.
+
+---
+
 # 9. Relação entre os módulos
 
 O curso é progressivo.
@@ -1117,23 +1173,26 @@ Auto Scaling
 capacidade EC2
 ```
 
-A arquitetura final planejada continua sendo construída progressivamente:
+A arquitetura final do projeto (Day 13) consolidou os conhecimentos estudados:
 
 ```text
 Internet
    ↓
-ALB
+ALB (público)
    ↓
-ECS / Fargate
-   ├── SQS
-   └── RDS
+ECS com capacidade EC2 (host network mode)
+   ├── base-api        → SQS input-queue
+   └── base-consumer   → Valkey (idempotência)
+                       → serviço HTTP externo (retry + circuit breaker)
+                       → SQS dlq-queue (falha)
         ↓
-   CloudWatch
+CloudWatch Logs / Alarms
 
 Docker → ECR → ECS
 ```
 
-O Final Project será responsável por consolidar os conhecimentos estudados.
+O RDS foi estudado no Day 7, mas o projeto final optou por um serviço HTTP
+externo simulado e armazenamento de estado em Valkey.
 
 ---
 
@@ -1152,10 +1211,10 @@ Day 9  → ECS                     ✅
 Day 10 → SQS                     ✅
 Day 11 → CloudWatch              ✅
 Day 12 → Auto Scaling            ✅
-Day 13 → Final Project           ⬜ Próximo
+Day 13 → Final Project           ✅
 ```
 
-**Próximo módulo: Day 13 — Final Project.**
+**Módulos concluídos. Próximo passo: simulados (practice exams) da CLF-C02.**
 
 ---
 
@@ -1186,9 +1245,15 @@ aws-cloud-practitioner-lab-ecs
 aws-cloud-practitioner-lab-sqs
 aws-cloud-practitioner-lab-cloudwatch
 aws-cloud-practitioner-lab-autoscaling
+aws-cloud-practitioner-lab-final            (policy de deploy scoped do projeto final)
 ```
 
 O princípio adotado é adicionar somente as permissões necessárias para cada exercício.
+
+O projeto final (Day 13) também criou roles de execução por serviço
+(`aws-cloud-practitioner-lab-final-ec2`, `-task-execution`, `-api-task`,
+`-consumer-task`) e uma policy de deploy scoped para não depender de
+`AdministratorAccess`.
 
 ## IAM Role
 
@@ -1306,9 +1371,9 @@ Mensagem recomendada:
 >
 > Leia o `docs/study-context.md` e o `docs/learning-log.md` do projeto para recuperar o contexto do curso.
 >
-> O último módulo concluído é o **Day 12 — Auto Scaling**.
+> Todos os módulos (Day 1 a Day 13 — Final Project) estão concluídos.
 >
-> Quero continuar pelo próximo módulo, **Day 13 — Final Project**.
+> Quero seguir para a preparação da prova com **simulados (practice exams) da CLF-C02**.
 >
 > Não repita os módulos anteriores.
 >

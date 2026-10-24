@@ -30,7 +30,7 @@ The goal of this project is to combine theoretical study with practical experien
 | 10 | SQS                           | Hands-on | ✅ Completed |
 | 11 | CloudWatch                    | Hands-on | ✅ Completed |
 | 12 | Auto Scaling                  | Hands-on | ✅ Completed |
-| 13 | Final Project                 | Hands-on | 🟡 In progress |
+| 13 | Final Project                 | Hands-on | ✅ Completed |
 
 ## 📚 Study Topics
 
@@ -96,19 +96,32 @@ aws-cloud-practitioner-lab/
 ├── 11-cloudwatch/
 ├── 12-auto-scaling/
 ├── 13-final-project/
+│   ├── README.md          # diagnóstico + arquitetura final
+│   ├── final_project/     # API + consumer (Spring Boot)
+│   └── infra/             # Terraform (ECS on EC2, ALB, SQS, Valkey, ECR)
 │
 ├── docs/
-│   ├── architecture/
-│   ├── cost-control/
-│   ├── notes/
-│   └── learning-log.md
+│   ├── learning-log.md
+│   └── study-context.md
 │
 └── README.md
 ```
 
 ## 📈 Progress
 
-This repository will evolve throughout the study plan as new AWS concepts, services, Terraform configurations, and practical exercises are completed.
+All 13 modules are complete. The final project consolidates the whole study plan
+into an event-driven application (API + consumer) deployed on AWS with **ECS on
+EC2**, a public **ALB**, **SQS + DLQ**, a private **Valkey** task, **ECR** and
+**CloudWatch** — validated end-to-end and then destroyed to keep costs at zero.
+
+### 🎯 Next step
+
+Practice exams (simulados) to prepare for the CLF-C02 exam:
+
+- [ ] Timed full practice exams (65 questions)
+- [ ] Review the weakest domains
+- [ ] Revisit the "pontos de atenção" from each module
+- [ ] Schedule the exam once scores are consistently high
 
 ---
 

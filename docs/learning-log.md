@@ -1770,3 +1770,166 @@ Foi utilizado `t3.nano` e apenas uma instância como capacidade desejada final. 
 Concluído.
 
 ---
+
+# Day 13 — Final Project
+
+**Status:** Concluído ✅
+
+**Resultado:** Consolidação de todos os módulos em uma aplicação real de dois
+microsserviços, implantada na AWS com ECS on EC2, testada ponta a ponta e
+destruída com validação de cleanup.
+
+## Objetivo
+
+Unir IAM, VPC, EC2, ECR, ECS, SQS, CloudWatch, Auto Scaling, containers e
+Terraform em um único projeto:
+
+* **base-api:** API REST que recebe eventos e publica no Amazon SQS.
+* **base-consumer:** consome o SQS, mantém estado/idempotência em Redis/Valkey,
+  chama um serviço HTTP externo com retry e circuit breaker e usa DLQ.
+
+Aplicação em Java 25 + Spring Boot 4, arquitetura hexagonal, observabilidade com
+logs JSON estruturados e tracing.
+
+## Conceitos consolidados
+
+* Desacoplamento com SQS (Producer/Consumer);
+* Idempotência e estado compartilhado em Redis/Valkey;
+* Retry + Circuit Breaker para chamadas externas;
+* Dead-Letter Queue (redrive, `maxReceiveCount`);
+* ECS com capacidade EC2 (Launch Template + Auto Scaling Group);
+* Application Load Balancer público → tarefas em rede privada;
+* ECR para distribuição de imagens;
+* CloudWatch Logs e Alarms;
+* IAM Least Privilege (Task Roles + Instance Role + policy de deploy scoped);
+* Sub-rede pública x NAT Gateway x VPC Endpoints (decisão por custo);
+* Terraform state, plan/apply/destroy e validação de recursos órfãos.
+
+## Arquitetura implantada
+
+```text
+Cliente
+   ↓ HTTP :80
+Application Load Balancer (público)
+   ↓ :8080
+base-api (ECS on EC2)
+   ↓ SendMessage
+SQS input-queue ──────→ base-consumer (ECS on EC2)
+                            │        │
+              Valkey (loopback)   serviço HTTP externo (mock)
+                            │
+                     falha → SQS dlq-queue
+```
+
+Decisões principais (documentadas em `13-final-project/infra/README.md`):
+
+```text
+Redis/Valkey  → container ECS na mesma capacidade (US$ 0 extra, em vez de
+                ElastiCache ~US$ 21,90/mês)
+Rede          → sub-rede pública + IP público (sem NAT Gateway e sem VPC
+                Interface Endpoints, que custariam mais)
+Compute       → ECS com EC2 (t3.small), host network mode
+```
+
+Tudo em `sa-east-1`, reutilizando a VPC do Day 4.
+
+## IAM Least Privilege
+
+Roles de execução por serviço:
+
+```text
+aws-cloud-practitioner-lab-final-ec2            → ECS agent
+aws-cloud-practitioner-lab-final-task-execution → ECR pull + logs + secrets
+aws-cloud-practitioner-lab-final-api-task       → apenas sqs:SendMessage
+aws-cloud-practitioner-lab-final-consumer-task  → Receive/Delete/ChangeVisibility
+```
+
+E uma policy scoped de deploy (`aws-cloud-practitioner-lab-final`) para remover a
+dependência do `AdministratorAccess`, validada com `iam:simulate-custom-policy`
+(confirmando tanto as ações permitidas quanto as negadas).
+
+## Teste ponta a ponta
+
+```text
+POST /events (com X-API-Key) → HTTP 202
+   ↓
+input-queue → 0 visíveis (consumida)
+   ↓
+consumer chamou o serviço externo → POST /process 200
+   ↓
+dlq-queue → 0 (sem falhas)
+```
+
+Evidência no CloudWatch Logs do serviço externo:
+
+```text
+"POST /process HTTP/1.1" 200 ... "Apache-HttpClient/5.6.3 (Java/25.0.4.1)"
+```
+
+## Principais dificuldades resolvidas
+
+* Task Definition no launch type EC2 exige `memory`/`memoryReservation` por container.
+* Nomes de parâmetro SSM não podem começar com `aws`/`ssm` → usado `/practitioner-lab/final/...`.
+* Policy gerenciada tem limite de 6144 caracteres → policy de deploy enxugada.
+* `terraform destroy` pode desanexar a policy scoped no meio do processo; com
+  `AdministratorAccess` anexado o cleanup é confiável.
+
+## Custos
+
+Stack completa (ALB + EC2 + EBS + ECR + SSM + CloudWatch) ≈ **US$ 55–65/mês** se
+deixada ligada. O ALB e a EC2 cobram por hora mesmo ociosos. Após os testes, os
+recursos foram destruídos e validados (sem recursos órfãos).
+
+## Resultado
+
+* [x] Aplicação de dois módulos integrada na AWS
+* [x] ECS on EC2 + ALB + SQS + DLQ + Valkey + ECR + CloudWatch
+* [x] IAM Least Privilege (roles + policy de deploy scoped)
+* [x] Teste ponta a ponta validado
+* [x] Observabilidade (logs/CloudWatch)
+* [x] Estimativa de custos documentada
+* [x] `terraform destroy` validado
+* [x] Runbook (`13-final-project/infra/RUNBOOK.md`)
+
+**Day 13 — Final Project: concluído. Projeto completo.**
+
+---
+
+# Encerramento dos módulos
+
+Todos os módulos do plano de estudo foram concluídos:
+
+```text
+Day 1  → Cloud Concepts          ✅
+Day 2  → Global Infrastructure   ✅
+Day 3  → IAM                     ✅
+Day 4  → VPC                     ✅
+Day 5  → EC2                     ✅
+Day 6  → S3                      ✅
+Day 7  → RDS                     ✅
+Day 8  → ECR                     ✅
+Day 9  → ECS                     ✅
+Day 10 → SQS                     ✅
+Day 11 → CloudWatch              ✅
+Day 12 → Auto Scaling            ✅
+Day 13 → Final Project           ✅
+```
+
+## Próximo passo: simulados
+
+Com a parte prática concluída, o próximo passo é a preparação para a prova com
+**simulados (practice exams)** da CLF-C02:
+
+* [ ] Fazer simulados completos cronometrados (65 questões);
+* [ ] Revisar os domínios com pior desempenho;
+* [ ] Revisar os "pontos de atenção" registrados em cada módulo;
+* [ ] Agendar a prova quando a média dos simulados estiver consistente e alta.
+
+Domínios do exame a revisar:
+
+```text
+1. Cloud Concepts
+2. Security and Compliance
+3. Cloud Technology and Services
+4. Billing, Pricing, and Support
+```
