@@ -87,7 +87,7 @@ services:
       - microservice-network
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:11.5.7
     ports:
       - "3000:3000"
     environment:
@@ -105,7 +105,7 @@ services:
       - microservice-network
 
   tempo:
-    image: grafana/tempo:latest
+    image: grafana/tempo:2.9.5
     user: "0:0"
     ports:
       - "3200:3200"

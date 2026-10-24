@@ -88,32 +88,39 @@ docker compose -f docker/dev/docker-compose.yml up -d --build
 Send messages through the API and observe processing:
 
 ```bash
-# Normal flow (3 messages)
+# Normal flow (3 messages) — o "id" é o correlationId usado no tracing
 for i in 1 2 3; do
-  curl -s -X POST http://localhost:8080/api/events \
+  curl -s -X POST http://localhost:8080/events \
     -H "Content-Type: application/json" \
     -H "X-API-Key: dev-secret" \
-    -d "{\"eventType\":\"TEST_EVENT\",\"payload\":{\"id\":\"$i\",\"data\":\"sample$i\"},\"origin\":\"SYSTEM_X\"}"
+    -d "{\"id\":\"evt-$i\",\"type\":\"TEST_EVENT\",\"data\":\"sample$i\"}"
 done
 
 # Failure: stop the external service mock and send messages that will fail
 docker compose -f docker/dev/docker-compose.yml stop external-service-mock
 for i in 4 5 6; do
-  curl -s -X POST http://localhost:8080/api/events \
+  curl -s -X POST http://localhost:8080/events \
     -H "Content-Type: application/json" \
     -H "X-API-Key: dev-secret" \
-    -d "{\"eventType\":\"TEST_EVENT\",\"payload\":{\"id\":\"$i\",\"data\":\"fail_sample$i\"},\"origin\":\"SYSTEM_X\"}"
+    -d "{\"id\":\"evt-$i\",\"type\":\"TEST_EVENT\",\"data\":\"fail_sample$i\"}"
 done
 
 # Recovery: restore the external service (health probe closes the circuit and reprocesses)
 docker compose -f docker/dev/docker-compose.yml start external-service-mock
 ```
 
-### 3. View metrics in Grafana
+### 3. View traces in Grafana
 
 Access `http://localhost:3000` → folder "Base Microservice" → dashboard **"Base Microservice Overview"**.
-During testing, monitor the panels: "Rate: Received vs Processed", "Circuit Open",
-"External Service /health OK/Failed", and "Errors".
+
+No topo, cole um **Correlation ID** (o `id` do evento, ex.: `evt-1`) na variável `$correlationId`:
+
+- **Tracing (Tempo) → "Waterfall API + Consumer (correlationId)"**: lista os traces daquele correlationId.
+- Clique no **Trace ID** → menu com **"Abrir no Trace View (Drilldown)"** (renderiza o trace no painel embutido) ou **"Abrir na tela de Trace (Explore)"**.
+- **"Trace View (Drilldown)"**: mostra o trace traversal — a API (`http post /events`) e o consumer (`base-consumer-input` / `base-consumer-dlq`) como **roots do MESMO trace** (traceId unificado via Redis), com os spans de Redis aninhados.
+- **"Rastreamento por correlationId"** (Loki): logs da API e do consumer para o mesmo id.
+
+> O `traceId` da API é gravado no Redis em `event:trace:<eventId>` e reaproveitado pelo consumer como root — por isso API e consumer aparecem no mesmo trace, sem propagação W3C pela fila.
 
 ## Docker
 

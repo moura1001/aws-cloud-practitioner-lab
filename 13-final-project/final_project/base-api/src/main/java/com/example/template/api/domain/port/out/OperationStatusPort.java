@@ -4,4 +4,6 @@ public interface OperationStatusPort {
     void setStatus(String eventId, String status);
 
     String getStatus(String eventId);
+
+    void setTraceId(String eventId, String traceId);
 }

@@ -11,6 +11,7 @@ import java.time.Duration;
 public class ValkeyOperationStatusAdapter implements OperationStatusPort {
 
     private static final String KEY_PREFIX = "event:status:";
+    private static final String TRACE_PREFIX = "event:trace:";
 
     private final StringRedisTemplate redisTemplate;
     private final Duration ttl;
@@ -33,5 +34,13 @@ public class ValkeyOperationStatusAdapter implements OperationStatusPort {
     public String getStatus(String eventId) {
         String key = KEY_PREFIX + eventId;
         return redisTemplate.opsForValue().get(key);
+    }
+
+    @Override
+    public void setTraceId(String eventId, String traceId) {
+        if (traceId == null || traceId.isBlank()) {
+            return;
+        }
+        redisTemplate.opsForValue().set(TRACE_PREFIX + eventId, traceId, ttl);
     }
 }

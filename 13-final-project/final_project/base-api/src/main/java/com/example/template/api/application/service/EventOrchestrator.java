@@ -10,6 +10,7 @@ import com.example.template.api.domain.port.out.ProducerPort;
 import com.example.template.api.domain.valueobject.OperationStatus;
 import com.example.template.api.infrastructure.config.aws.SqsProperties;
 import com.example.template.api.infrastructure.logging.CorrelationIdSupport;
+import io.opentelemetry.api.trace.Span;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class EventOrchestrator implements ProcessEventUseCase {
 
         String eventId = resolveEventId(request.getId());
         CorrelationIdSupport.forcePut(eventId);
+        saveTraceId(eventId);
 
         log.info("[API] Evento recebido eventId={}", eventId);
 
@@ -64,6 +66,13 @@ public class EventOrchestrator implements ProcessEventUseCase {
                 .status(OperationStatus.PROCESSING.name())
                 .message("Evento recebido e encaminhado para processamento")
                 .build();
+    }
+
+    private void saveTraceId(String eventId) {
+        var spanContext = Span.current().getSpanContext();
+        if (spanContext.isValid()) {
+            operationStatusPort.setTraceId(eventId, spanContext.getTraceId());
+        }
     }
 
     private void validate(EventRequest request) {
