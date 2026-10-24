@@ -30,7 +30,7 @@ The goal of this project is to combine theoretical study with practical experien
 | 10 | SQS                           | Hands-on | ✅ Completed |
 | 11 | CloudWatch                    | Hands-on | ✅ Completed |
 | 12 | Auto Scaling                  | Hands-on | ✅ Completed |
-| 13 | Final Project                 | —        | ⬜ Not started |
+| 13 | Final Project                 | Hands-on | 🟡 In progress |
 
 ## 📚 Study Topics
 

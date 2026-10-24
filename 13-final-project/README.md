@@ -402,13 +402,30 @@ O fluxo de trabalho será:
 
 **Entender → Planejar → Criar → Testar → Observar → Documentar → Destruir**
 
-## 6. Próxima etapa
+## 6. Arquitetura final e implementação
 
-Antes de iniciar a implementação, será necessário confirmar como a aplicação está configurada para se conectar aos serviços externos.
+A questão da seção anterior foi respondida na análise do código: a aplicação já
+usa a cadeia padrão de credenciais da AWS (`DefaultCredentialsProvider`) e lê a
+região, as URLs das filas e o endereço do Redis por variáveis de ambiente. No
+perfil `prod` ela deixa de usar o LocalStack e passa a falar com os serviços
+reais — nenhuma alteração de código foi necessária.
 
-A principal questão pendente é verificar se a aplicação está preparada para utilizar o Amazon SQS real e um Redis acessível pela rede AWS, ou se atualmente depende do LocalStack e do Valkey/Redis definidos no Docker Compose local.
+A infraestrutura foi implementada em Terraform em [`infra`](infra),
+reutilizando a VPC do laboratório `04-vpc`. As principais decisões:
 
-Essa informação determinará quais ajustes de configuração serão necessários antes do provisionamento da infraestrutura.
+- **Região `sa-east-1`**, **sem NAT Gateway** e sem VPC Interface Endpoints.
+- **ECS com capacidade EC2** (`t3.small`, uma AZ), em `host` network mode.
+- **Redis/Valkey como tarefa ECS** na mesma capacidade, privado (loopback +
+  `requirepass`), em vez de ElastiCache — menor custo.
+- **ALB público** como ponto de entrada da API; consumer e mock sem exposição.
+- **Segredos** em SSM SecureString, injetados via `secrets` do ECS.
+- **IAM least privilege**: roles de execução por serviço (instance, task
+  execution, api task, consumer task) e uma policy scoped de deploy
+  (`aws-cloud-practitioner-lab-final`) para **remover a dependência do
+  `AdministratorAccess`** — com bootstrap único antes de removê-lo.
+
+Detalhes, ordem de execução e estimativa de custos (~US$ 55–65/mês se deixado
+ligado) estão em [`infra/README.md`](infra/README.md).
 
 ## 7. Resultado esperado
 

@@ -124,17 +124,19 @@ No topo, cole um **Correlation ID** (o `id` do evento, ex.: `evt-1`) na variáve
 
 ## Docker
 
-Container artifacts are organized in `docker/dev` and `docker/prd`.
+Container artifacts live in `docker/dev` (local development). There are two
+Dockerfiles: `Dockerfile-api` (base-api) and `Dockerfile` (base-consumer).
 
 ```bash
 # Build and run with Docker Compose
 docker compose -f docker/dev/docker-compose.yml up --build
 
-# Build image only
-docker build -f docker/prd/Dockerfile -t base-microservice:latest .
+# Build a single image
+docker build -f docker/dev/Dockerfile-api -t base-api:latest .
+docker build -f docker/dev/Dockerfile     -t base-consumer:latest .
 ```
 
-The final image uses `eclipse-temurin:25-jre-alpine`, reducing attack surface and running as non-privileged user.
+The final images use `eclipse-temurin:25-jre-alpine`, reducing attack surface and running as non-privileged user.
 
 ### Ports exposed in local environment (docker-compose)
 
@@ -184,6 +186,40 @@ also remain on this host.
 | `output-queue`      | `http://localstack:4566/000000000000/output-queue`              |
 | `dlq-queue`         | `http://localstack:4566/000000000000/dlq-queue`                 |
 | `notification-queue` | `http://localstack:4566/000000000000/notification-queue`       |
+
+## Deploy on AWS (ECS on EC2)
+
+The AWS infrastructure is defined with Terraform in
+[`../infra`](../infra) and reuses the VPC from the `04-vpc` lab. It provisions
+an ECR repository per module, SQS `input` + `dlq` queues, an ECS cluster backed
+by an EC2 Auto Scaling Group, a public ALB, a private Valkey task, an external
+service mock, CloudWatch logs and alarms, plus the IAM roles for the tasks.
+
+Highlights:
+
+- **Region:** `sa-east-1` only. **No NAT Gateway** and no VPC interface endpoints.
+- **Compute:** ECS on EC2 (`t3.small`, single AZ) using `host` network mode.
+- **Valkey:** an ECS task bound to `127.0.0.1` with `requirepass`, reachable only by the API/consumer (no ElastiCache cost).
+- **Secrets:** API key and Valkey URL/password are stored in SSM SecureString and injected as ECS secrets.
+- **Least privilege IAM:** per-service task roles plus a scoped deploy policy (`aws-cloud-practitioner-lab-final`) so the Terraform identity no longer needs `AdministratorAccess`.
+
+Production environment variables used by the tasks (no static AWS keys — the
+task IAM role provides credentials through the default provider chain):
+
+| Variable | base-api | base-consumer |
+|---|---|---|
+| `SPRING_PROFILES_ACTIVE` | `prod` | `prod` |
+| `SERVER_PORT` | `8080` | `8081` |
+| `AWS_REGION` | `sa-east-1` | `sa-east-1` |
+| `AWS_SQS_QUEUES_INPUT_QUEUE_URL` | ✅ | ✅ |
+| `AWS_SQS_QUEUES_DLQ_QUEUE_URL` | — | ✅ |
+| `VALKEY_HOST` / `VALKEY_PORT` | `localhost` / `6379` | `localhost` / `6379` |
+| `VALKEY_URL` (secret) | ✅ | ✅ |
+| `APP_API_KEY` (secret) | ✅ | — |
+| `EXT_SERVICE_URL_PROCESS` / `_HEALTH` | — | `http://localhost:8888/...` |
+
+See [`../infra/README.md`](../infra/README.md) for the full architecture,
+deployment steps and cost estimate.
 
 ## Structured logging
 
