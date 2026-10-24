@@ -7,6 +7,10 @@
 # supports resource-level permissions; create/describe actions that AWS only
 # allows on `*` stay on `*`.
 #
+# IAM limits a managed policy to 6144 characters and the user can have at most
+# 10 managed policies, so this single policy keeps only the strict minimum
+# needed to create, read and destroy this project.
+#
 # Bootstrap: this policy and its attachment must be applied once while
 # AdministratorAccess is still attached. After that, AdministratorAccess can be
 # detached and this policy is enough for future plans/applies.
@@ -20,7 +24,7 @@ locals {
 
 resource "aws_iam_policy" "deployer" {
   name        = "${var.project_name}-final"
-  description = "Least-privilege permissions to deploy the final project (ECS on EC2, ALB, SQS, Valkey, ECR, CloudWatch)"
+  description = "Least-privilege permissions to deploy the final project"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -35,27 +39,14 @@ resource "aws_iam_policy" "deployer" {
         Sid    = "Ec2Read"
         Effect = "Allow"
         Action = [
-          "ec2:DescribeRegions",
           "ec2:DescribeAvailabilityZones",
           "ec2:DescribeAccountAttributes",
           "ec2:DescribeVpcs",
-          "ec2:DescribeVpcAttribute",
           "ec2:DescribeSubnets",
-          "ec2:DescribeRouteTables",
-          "ec2:DescribeInternetGateways",
-          "ec2:DescribeNatGateways",
           "ec2:DescribeSecurityGroups",
           "ec2:DescribeSecurityGroupRules",
           "ec2:DescribeLaunchTemplates",
-          "ec2:DescribeLaunchTemplateVersions",
-          "ec2:DescribeInstances",
-          "ec2:DescribeInstanceTypes",
-          "ec2:DescribeInstanceAttribute",
-          "ec2:DescribeInstanceStatus",
-          "ec2:DescribeVolumes",
-          "ec2:DescribeNetworkInterfaces",
-          "ec2:DescribeImages",
-          "ec2:DescribeTags"
+          "ec2:DescribeLaunchTemplateVersions"
         ]
         Resource = "*"
       },
@@ -92,31 +83,21 @@ resource "aws_iam_policy" "deployer" {
         Resource = "arn:aws:ec2:${local.region}:${local.account_id}:launch-template/*"
       },
       {
-        Sid    = "ElasticLoadBalancing"
+        Sid    = "LoadBalancing"
         Effect = "Allow"
         Action = [
           "elasticloadbalancing:CreateLoadBalancer",
           "elasticloadbalancing:DeleteLoadBalancer",
           "elasticloadbalancing:DescribeLoadBalancers",
-          "elasticloadbalancing:DescribeLoadBalancerAttributes",
-          "elasticloadbalancing:ModifyLoadBalancerAttributes",
           "elasticloadbalancing:CreateTargetGroup",
           "elasticloadbalancing:DeleteTargetGroup",
           "elasticloadbalancing:DescribeTargetGroups",
-          "elasticloadbalancing:DescribeTargetGroupAttributes",
-          "elasticloadbalancing:ModifyTargetGroup",
-          "elasticloadbalancing:ModifyTargetGroupAttributes",
           "elasticloadbalancing:CreateListener",
           "elasticloadbalancing:DeleteListener",
           "elasticloadbalancing:DescribeListeners",
-          "elasticloadbalancing:DescribeListenerCertificates",
-          "elasticloadbalancing:ModifyListener",
-          "elasticloadbalancing:DescribeTargetHealth",
           "elasticloadbalancing:DescribeTags",
           "elasticloadbalancing:AddTags",
-          "elasticloadbalancing:RemoveTags",
-          "elasticloadbalancing:SetSecurityGroups",
-          "elasticloadbalancing:SetSubnets"
+          "elasticloadbalancing:RemoveTags"
         ]
         Resource = "*"
       },
@@ -128,17 +109,9 @@ resource "aws_iam_policy" "deployer" {
           "autoscaling:UpdateAutoScalingGroup",
           "autoscaling:DeleteAutoScalingGroup",
           "autoscaling:DescribeAutoScalingGroups",
-          "autoscaling:DescribeAutoScalingInstances",
-          "autoscaling:DescribeScalingActivities",
-          "autoscaling:DescribePolicies",
           "autoscaling:DescribeTags",
           "autoscaling:CreateOrUpdateTags",
-          "autoscaling:DeleteTags",
-          "autoscaling:SetDesiredCapacity",
-          "autoscaling:PutScalingPolicy",
-          "autoscaling:DeletePolicy",
-          "autoscaling:SuspendProcesses",
-          "autoscaling:ResumeProcesses"
+          "autoscaling:DeleteTags"
         ]
         Resource = "*"
       },
@@ -149,54 +122,40 @@ resource "aws_iam_policy" "deployer" {
           "ecs:CreateCluster",
           "ecs:DescribeClusters",
           "ecs:DeleteCluster",
-          "ecs:ListClusters",
           "ecs:RegisterTaskDefinition",
           "ecs:DescribeTaskDefinition",
           "ecs:DeregisterTaskDefinition",
-          "ecs:ListTaskDefinitions",
           "ecs:CreateService",
           "ecs:DescribeServices",
           "ecs:UpdateService",
           "ecs:DeleteService",
-          "ecs:ListServices",
-          "ecs:ListTasks",
-          "ecs:DescribeTasks",
-          "ecs:StopTask",
           "ecs:TagResource",
-          "ecs:UntagResource",
           "ecs:ListTagsForResource"
         ]
         Resource = "*"
       },
       {
-        Sid    = "CloudWatchLogs"
+        Sid    = "Logs"
         Effect = "Allow"
         Action = [
           "logs:CreateLogGroup",
           "logs:DeleteLogGroup",
           "logs:DescribeLogGroups",
           "logs:PutRetentionPolicy",
-          "logs:DeleteRetentionPolicy",
-          "logs:DescribeLogStreams",
-          "logs:ListTagsForResource",
           "logs:TagResource",
-          "logs:UntagResource",
-          "logs:TagLogGroup",
-          "logs:UntagLogGroup",
-          "logs:ListTagsLogGroup"
+          "logs:ListTagsForResource"
         ]
         Resource = "*"
       },
       {
-        Sid    = "CloudWatchAlarms"
+        Sid    = "Alarms"
         Effect = "Allow"
         Action = [
           "cloudwatch:PutMetricAlarm",
           "cloudwatch:DescribeAlarms",
           "cloudwatch:DeleteAlarms",
-          "cloudwatch:ListTagsForResource",
           "cloudwatch:TagResource",
-          "cloudwatch:UntagResource"
+          "cloudwatch:ListTagsForResource"
         ]
         Resource = "*"
       },
@@ -208,9 +167,6 @@ resource "aws_iam_policy" "deployer" {
           "ecr:DeleteRepository",
           "ecr:DescribeRepositories",
           "ecr:DescribeImages",
-          "ecr:ListImages",
-          "ecr:TagResource",
-          "ecr:UntagResource",
           "ecr:ListTagsForResource",
           "ecr:PutImageTagMutability",
           "ecr:PutImageScanningConfiguration",
@@ -234,38 +190,30 @@ resource "aws_iam_policy" "deployer" {
           "sqs:DeleteQueue",
           "sqs:GetQueueAttributes",
           "sqs:SetQueueAttributes",
-          "sqs:GetQueueUrl",
-          "sqs:ListQueues",
           "sqs:TagQueue",
-          "sqs:UntagQueue",
           "sqs:ListQueueTags"
         ]
         Resource = "arn:aws:sqs:${local.region}:${local.account_id}:${var.project_name}-final-*"
       },
       {
-        Sid    = "SsmParameters"
+        Sid    = "SsmProjectParameters"
         Effect = "Allow"
         Action = [
           "ssm:PutParameter",
           "ssm:GetParameter",
           "ssm:GetParameters",
           "ssm:DeleteParameter",
-          "ssm:DescribeParameters",
           "ssm:AddTagsToResource",
-          "ssm:RemoveTagsFromResource",
           "ssm:ListTagsForResource"
         ]
-        Resource = "arn:aws:ssm:${local.region}:${local.account_id}:parameter/${var.project_name}/final/*"
+        Resource = "arn:aws:ssm:${local.region}:${local.account_id}:parameter/${local.secrets_prefix}/*"
       },
       {
-        # Public AWS parameters (e.g. the ECS-optimized AMI id) are read-only and
-        # owned by AWS, so they live outside the project prefix.
         Sid    = "SsmPublicAwsParameters"
         Effect = "Allow"
         Action = [
           "ssm:GetParameter",
-          "ssm:GetParameters",
-          "ssm:GetParametersByPath"
+          "ssm:GetParameters"
         ]
         Resource = [
           "arn:aws:ssm:${local.region}:*:parameter/aws/service/*",
@@ -273,13 +221,12 @@ resource "aws_iam_policy" "deployer" {
         ]
       },
       {
-        Sid    = "KmsForSsmSecureString"
+        Sid    = "KmsForSsm"
         Effect = "Allow"
         Action = [
           "kms:Encrypt",
           "kms:Decrypt",
-          "kms:GenerateDataKey",
-          "kms:DescribeKey"
+          "kms:GenerateDataKey"
         ]
         Resource = "*"
         Condition = {
@@ -296,8 +243,6 @@ resource "aws_iam_policy" "deployer" {
           "iam:DeleteRole",
           "iam:GetRole",
           "iam:TagRole",
-          "iam:UntagRole",
-          "iam:ListRoleTags",
           "iam:ListRolePolicies",
           "iam:GetRolePolicy",
           "iam:PutRolePolicy",
@@ -317,10 +262,7 @@ resource "aws_iam_policy" "deployer" {
           "iam:DeleteInstanceProfile",
           "iam:GetInstanceProfile",
           "iam:AddRoleToInstanceProfile",
-          "iam:RemoveRoleFromInstanceProfile",
-          "iam:TagInstanceProfile",
-          "iam:UntagInstanceProfile",
-          "iam:ListInstanceProfileTags"
+          "iam:RemoveRoleFromInstanceProfile"
         ]
         Resource = local.project_profile_prefix
       },
@@ -364,10 +306,7 @@ resource "aws_iam_policy" "deployer" {
           "iam:ListPolicyVersions",
           "iam:CreatePolicyVersion",
           "iam:DeletePolicyVersion",
-          "iam:SetDefaultPolicyVersion",
-          "iam:TagPolicy",
-          "iam:UntagPolicy",
-          "iam:ListPolicyTags"
+          "iam:SetDefaultPolicyVersion"
         ]
         Resource = "arn:aws:iam::${local.account_id}:policy/${var.project_name}-final*"
       },

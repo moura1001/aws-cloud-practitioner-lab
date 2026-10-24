@@ -2,6 +2,13 @@
 # parameters. ECS injects them into containers at runtime, so they never appear
 # in the task definitions. The generated values live only in the (git-ignored)
 # Terraform state.
+#
+# NOTE: SSM forbids parameter names starting with `aws` or `ssm` (they are
+# reserved). The project name starts with `aws-`, so a dedicated non-reserved
+# prefix is used for the secrets.
+locals {
+  secrets_prefix = "practitioner-lab/final"
+}
 
 resource "random_password" "api_key" {
   length  = 32
@@ -15,7 +22,7 @@ resource "random_password" "valkey_password" {
 }
 
 resource "aws_ssm_parameter" "api_key" {
-  name        = "/${var.project_name}/final/api-key"
+  name        = "/${local.secrets_prefix}/api-key"
   description = "X-API-Key expected by base-api"
   type        = "SecureString"
   value       = random_password.api_key.result
@@ -26,7 +33,7 @@ resource "aws_ssm_parameter" "api_key" {
 }
 
 resource "aws_ssm_parameter" "valkey_password" {
-  name        = "/${var.project_name}/final/valkey-password"
+  name        = "/${local.secrets_prefix}/valkey-password"
   description = "Raw Valkey password used by the Valkey container (requirepass)"
   type        = "SecureString"
   value       = random_password.valkey_password.result
@@ -37,7 +44,7 @@ resource "aws_ssm_parameter" "valkey_password" {
 }
 
 resource "aws_ssm_parameter" "valkey_url" {
-  name        = "/${var.project_name}/final/valkey-url"
+  name        = "/${local.secrets_prefix}/valkey-url"
   description = "Redis URL (with password) used by base-api and base-consumer"
   type        = "SecureString"
   value       = "redis://:${random_password.valkey_password.result}@localhost:6379"

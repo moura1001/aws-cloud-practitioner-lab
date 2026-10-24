@@ -98,6 +98,7 @@ resource "aws_ecs_task_definition" "api" {
       name      = "base-api"
       image     = "${aws_ecr_repository.api.repository_url}:${var.api_image_tag}"
       essential = true
+      memory    = 512
 
       # host network mode requires a static port mapping (host == container).
       portMappings = [
@@ -156,6 +157,7 @@ resource "aws_ecs_task_definition" "consumer" {
       name      = "base-consumer"
       image     = "${aws_ecr_repository.consumer.repository_url}:${var.consumer_image_tag}"
       essential = true
+      memory    = 640
 
       environment = [
         { name = "SPRING_PROFILES_ACTIVE", value = "prod" },
@@ -210,6 +212,7 @@ resource "aws_ecs_task_definition" "valkey" {
       name      = "valkey"
       image     = var.valkey_image
       essential = true
+      memory    = 256
 
       # Bind to loopback only and require a password: the state store is never
       # reachable from outside the instance.
@@ -250,6 +253,7 @@ resource "aws_ecs_task_definition" "external_service" {
       name      = "external-service-mock"
       image     = var.external_service_image
       essential = true
+      memory    = 128
 
       environment = [
         { name = "HTTP_PORT", value = "8888" },

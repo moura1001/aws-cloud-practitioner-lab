@@ -158,7 +158,7 @@ docker push "$REGISTRY/aws-cloud-practitioner-lab-final-consumer:latest"
 
 # 3. Testar (a API exige o header X-API-Key)
 ALB=$(cd ../infra && terraform output -raw alb_dns_name)
-API_KEY=$(aws ssm get-parameter --name /aws-cloud-practitioner-lab/final/api-key \
+API_KEY=$(aws ssm get-parameter --name /practitioner-lab/final/api-key \
   --with-decryption --query Parameter.Value --output text --region sa-east-1)
 curl -X POST "http://$ALB/events" \
   -H "Content-Type: application/json" -H "X-API-Key: $API_KEY" \
